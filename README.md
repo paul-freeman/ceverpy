@@ -6,7 +6,7 @@ Codes\_Evert\_Python3
 
 This package is available on PyPI.
 
-    pip install cervepy
+    pip install ceverpy
 
 Installing via ``pip`` should get most of the Python dependencies you need.
 However, you will still need to install the necessary R packages.
