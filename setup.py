@@ -8,11 +8,11 @@ setup(
     author_email='edur409@aucklanduni.ac.nz',
     packages=['ceverpy'],
     install_requires=[
-        'numpy',
-        'matplotlib',
-        'scipy',
-        'mcerp3',
-        'rpy2'],
+        'numpy>=1.13.3',
+        'matplotlib>=2.1.0',
+        'scipy>=0.19.0',
+        'mcerp3>=1.0.0',
+        'rpy2>=2.9.0'],
     entry_points={'console_scripts': [
         'simple_harmonics = ceverpy.Simple_harmonics:simple_harmonics',
         'pick_vp_dtw = ceverpy.Pick_Vp_DTW:pick_vp_dtw',
