@@ -4,25 +4,24 @@ Codes\_Evert\_Python3
 
 # Installation
 
-Things necessary to compile the codes succesfully in Python 3.6.3
+This package is available on PyPI.
 
-The python version was install in a linux machine with the anaconda shell script
-available at: https://www.anaconda.com/download/ (Last checked: 09/02/2018)
+    pip install cervepy
 
-Installation:
-bash Anaconda-latest-Linux-x86\_64.sh
+Installing via ``pip`` should get most of the dependencies you need. However,
+you will still need to install the necessary R packages.
 
-## Packages
+The following is a list of packaged used during development:
 
-numpy 1.13.3
-matplotlib 2.1.0
-scipy 0.19.1
-mcerp3 1.0.0
-rpy2 2.9.0
-R version 3.4.2
-
-Install dtw and proxy packages of R in the right directories.  This requires
-copy the packages folders 'dtw' and 'proxy' in the library directory of R.
+ * python 3.6.3
+ * numpy 1.13.3
+ * matplotlib 2.1.0
+ * scipy 0.19.1
+ * mcerp3 1.0.0
+ * rpy2 2.9.0
+ * R version 3.4.2
+   * proxy
+   * dtw
 
 # Scripts
 
@@ -30,22 +29,20 @@ Installing the package will provide you with the following scripts:
 
 ## Velocity picking (data on the bench)
 
- * simple\_harmonics: test the DTW picking with simple functions (input folder: Dummy)
- * pick\_vp\_dtw: do picking of P-waves using Dynamic Time Warping (input
-   folder: NM11\_2087\_4A)
- * pick\_vs\_dtw: do picking of S-waves using Dynamic Time Warping (input
-   folder: NM11\_2087\_4A)
- * cross\_corr\_p: calculate the time lag through cross-correlation for the
-   P-wave (input folder: NM11\_2087\_4A)
- * cross\_corr\_s: calculate the time lag through cross-correlation for the
-   S-wave (input folder: NM11\_2087\_4A)
+ * *simple\_harmonics*: test the DTW picking with simple functions
+ * *pick\_vp\_dtw*: do picking of P-waves using Dynamic Time Warping
+ * *pick\_vs\_dtw*: do picking of S-waves using Dynamic Time Warping
+ * *cross\_corr\_p*: calculate the time lag through cross-correlation for the
+   P-wave
+ * *cross\_corr\_s*: calculate the time lag through cross-correlation for the
+   S-wave
 
 ## Velocity picking (data on the vessel)
 
- * vp\_dtw\_saturated\_loop: back-track P-wave picking points between waveforms
-   from high to low pressures. (input folder: NM11-2087-4B\_sat500) 
- * vs\_dtw\_saturated\_loop: back-track S-wave picking points between waveforms
-   from high to low pressures. (input folder: NM11-2087-4B\_sat500) 
+ * *vp\_dtw\_saturated\_loop*: back-track P-wave picking points between waveforms
+   from high to low pressures
+ * *vs\_dtw\_saturated\_loop*: back-track S-wave picking points between waveforms
+   from high to low pressures
 
 ## Densities and porosities
 
@@ -54,15 +51,16 @@ can be different.  Densities\_porosity2.py relies on the weights of the
 saturated samples in water which are more accurate to measure.  Both
 subroutines are included for comparison.
 
- * densities\_porosity: Calculate densities and porosities from the Archimedes
-   measurements (input folder: NM11\_2087\_4A)
- * densities\_porosity2: Calculate densities and porosities from the Archimedes
-   measurements (input folder: NM11\_2087\_4A)
+ * *densities\_porosity*: Calculate densities and porosities from the Archimedes
+   measurements
+ * *densities\_porosity2*: Calculate densities and porosities from the Archimedes
+   measurements
 
 ## Miscellaneous subroutines
 
 Calculate elastic constants and densities from the pycnometer files:
 
- * elastic\_constants
- * elastic\_constants\_pyc
- * pycnometer\_densities 
+ * *elastic\_constants*
+ * *elastic\_constants\_pyc*
+ * *pycnometer\_densities*
+
