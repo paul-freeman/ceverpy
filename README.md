@@ -1,12 +1,10 @@
-# ceverpy
+# Poropyck
 
-Codes\_Evert\_Python3
-
-# Installation
+## Installation
 
 This package is available on PyPI.
 
-    pip install ceverpy
+    pip install poropyck
 
 Installing via ``pip`` should get most of the Python dependencies you need.
 However, you will still need to install the necessary R packages.
@@ -22,7 +20,7 @@ The following is a list of packages used during development:
  * R version 3.4.2
    * dtw
 
-## R packages
+### R packages
 
 The R language and its associated packages must be installed separately.
 Installing R depends on your Linux distribution, but you must ensure you are
@@ -32,11 +30,11 @@ After installing R, you will need to ensure you have the [Dynamic Time
 Warping](http://dtw.r-forge.r-project.org/) package, ``dtw``. Please refer to
 the installation instructions for this package if needed.
 
-# Scripts
+## Scripts
 
 Installing the package will provide you with the following scripts:
 
-## Velocity picking (data on the bench)
+### Velocity picking (data on the bench)
 
  * *simple\_harmonics*: test the DTW picking with simple functions
  * *pick\_vp\_dtw*: do picking of P-waves using Dynamic Time Warping
@@ -46,14 +44,14 @@ Installing the package will provide you with the following scripts:
  * *cross\_corr\_s*: calculate the time lag through cross-correlation for the
    S-wave
 
-## Velocity picking (data on the vessel)
+### Velocity picking (data on the vessel)
 
  * *vp\_dtw\_saturated\_loop*: back-track P-wave picking points between waveforms
    from high to low pressures
  * *vs\_dtw\_saturated\_loop*: back-track S-wave picking points between waveforms
    from high to low pressures
 
-## Densities and porosities
+### Densities and porosities
 
 Depending on the denominator used in the Archimedes calculations the results
 can be different.  Densities\_porosity2.py relies on the weights of the
@@ -65,7 +63,7 @@ subroutines are included for comparison.
  * *densities\_porosity2*: Calculate densities and porosities from the Archimedes
    measurements
 
-## Miscellaneous subroutines
+### Miscellaneous subroutines
 
 Calculate elastic constants and densities from the pycnometer files:
 
