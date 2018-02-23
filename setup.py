@@ -7,6 +7,8 @@ setup(
     author='Evert Duran Quintero',
     author_email='edur409@aucklanduni.ac.nz',
     packages=['poropyck'],
+    include_package_data=True,
+    python_requires='~=3.4',
     install_requires=[
         'numpy>=1.13.3',
         'matplotlib>=2.1.0',
@@ -14,6 +16,7 @@ setup(
         'mcerp3>=1.0.0',
         'rpy2>=2.9.0'],
     entry_points={'console_scripts': [
+        'install_poropyck_samples = poropyck.install_samples:install_samples',
         'simple_harmonics = poropyck.Simple_harmonics:simple_harmonics',
         'pick_vp_dtw = poropyck.Pick_Vp_DTW:pick_vp_dtw',
         'pick_vs_dtw = poropyck.Pick_Vs_DTW:pick_vs_dtw',
