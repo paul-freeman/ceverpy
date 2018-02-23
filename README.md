@@ -54,7 +54,7 @@ Installing the package will provide you with the following scripts:
 ### Densities and porosities
 
 Depending on the denominator used in the Archimedes calculations the results
-can be different.  Densities\_porosity2.py relies on the weights of the
+can be different.  ``densities\_porosity2`` relies on the weights of the
 saturated samples in water which are more accurate to measure.  Both
 subroutines are included for comparison.
 
@@ -62,6 +62,12 @@ subroutines are included for comparison.
    measurements
  * *densities\_porosity2*: Calculate densities and porosities from the Archimedes
    measurements
+
+### Samples
+
+Sample data can be installed using the following script:
+
+ * *install_poropyck_samples*: installs sample data into the specified location
 
 ### Miscellaneous subroutines
 
