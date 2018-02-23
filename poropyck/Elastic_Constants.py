@@ -5,6 +5,7 @@ Created on Thu Sep  7 12:40:08 2017
 @author: leo
 """
 #Import the Rock Physics subroutines
+from pkg_resources import resource_filename
 from . import RockPhysics as rp #Loads all the necessary files
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,7 +16,8 @@ def elastic_constants():
     font= {'size' : 18}
     plt.rc('font',**font)
 
-    W=np.loadtxt('Samples_Depth.txt',dtype={'names': ('sample', 'depth'),'formats': ('S20', 'f4')})
+    filename = resource_filename('poropyck', 'Samples_Depth.txt')
+    W=np.loadtxt(filename,dtype={'names': ('sample', 'depth'),'formats': ('S20', 'f4')})
     plt.close('all')
     #value = input("Choose folder: Press 1 (dry rock), Press 2 (saturated rock) \n")
     #if value==1:
