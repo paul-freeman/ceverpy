@@ -1,12 +1,20 @@
-# PICK THE S-ARRIVAL TIMES FOR THE DRY AND SATURATED WAVEFORMS USING DTW
-"""
+"""PICK THE S-ARRIVAL TIMES FOR THE DRY AND SATURATED WAVEFORMS USING DTW
+
 Created on Fri Mar 10 15:54:27 2017
 
 @author: edur409
 """
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import hilbert
+import mcerp3 as mc
+from . import RockPhysics as rp
+from .dtw_c import dtw
+
+
 COORDS = []
-#Subroutine to pick values from the active plot
 def onpick(event):
+    """Subroutine to pick values from the active plot"""
     global COORDS
     thisline = event.artist
     xdata = thisline.get_xdata()
@@ -17,32 +25,18 @@ def onpick(event):
     COORDS.append((xdata[ind], ydata[ind]))
     return COORDS
 
-def crosscorr_lags(A,B):
-    C=np.correlate(A,B,mode='full')
-    lags=np.linspace(-len(A),len(A),len(C))
-    return lags,C
 
-#Import Modules
-import numpy as np
-import matplotlib.pyplot as plt
-import rpy2.robjects.numpy2ri
-from rpy2.robjects.packages import importr
-from scipy.signal import hilbert
-from matplotlib.ticker import NullFormatter, FormatStrFormatter
-import mcerp3 as mc
-from . import RockPhysics as rp
-#from waveletFunctions import wavelet
+def crosscorr_lags(A,B):
+    c_value = np.correlate(A, B, mode='full')
+    lags = np.linspace(-len(A), len(A), len(c_value))
+    return lags, c_value
+
 
 def pick_vp_dtw():
-    rpy2.robjects.numpy2ri.activate()
     global COORDS
     #Font size for plots
-    font= {'size' : 18}
-    plt.rc('font',**font)
-
-    # Set up our R namespaces
-    R = rpy2.robjects.r
-    DTW = importr('dtw') #import the "dtw" function from R
+    font = {'size' : 18}
+    plt.rc('font', **font)
 
     #Choose the sample's folder
     well=input("Type name of sample (e.g. 'NM11_2087_4A'): \n")
@@ -104,31 +98,21 @@ def pick_vp_dtw():
     queryh=np.abs(hilbert(Ss[i_s:f_s]/np.max(np.abs(Ss[i_s:f_s]))))
     suffix='both' #Suffix for the files
 
-
-
     # Calculate the alignment vector and corresponding distance (DTW)
-    alignment = R.dtw(query, template, keep=True)
-    alignmenth = R.dtw(queryh, templateh, keep=True)
-    alignmenta = R.dtw(querya, templatea, keep=True)
-    dist = alignment.rx('distance')[0][0] #The lower the distance of alignment, the better the match
-    disth = alignmenth.rx('distance')[0][0]
-    dista = alignmenta.rx('distance')[0][0]
+    # Delete costs matrix because it can be quite large - and we don't use it.
+    dist, indices1, indices2, costs = dtw(query, template)
+    del costs
+    disth, indices1h, indices2h, costsh = dtw(queryh, templateh)
+    del costsh
+    dista, indices1a, indices2a, costsa = dtw(querya, templatea)
+    del costsa
 
-    print('Distance of the DTW algorithm (waveform): ',dist)
-    print('Distance of the DTW algorithm (phase): ',dista)
-    print('Distance of the DTW algorithm (envelope): ',disth)
-
-    #Indices of alignment
-    I1=alignment.rx('index1')[0]
-    I2=alignment.rx('index2')[0]
-    I1h=alignmenth.rx('index1')[0]
-    I2h=alignmenth.rx('index2')[0]
-    I1a=alignmenta.rx('index1')[0]
-    I2a=alignmenta.rx('index2')[0]
-
+    # The lower the distance of alignment, the better the match
+    print('Distance of the DTW algorithm (waveform): {:.3f}'.format(dist))
+    print('Distance of the DTW algorithm (phase): {:.3f}'.format(dista))
+    print('Distance of the DTW algorithm (envelope): {:.3f}'.format(disth))
 
     print('Close the figures to continue running the code...')
-
     #3) PLOT THE OUTPUTS OF THE DTW ALGORITHM
     #PLOTTING THE OUTPUTS OF THE DTW ALGORITHM BEGINS HERE!!!
     #Plots
@@ -140,8 +124,8 @@ def pick_vp_dtw():
     plt.legend()
     plt.xlabel('time ($\mu$s)')
     #Plot the matching points
-    for i in np.arange(0,len(I1)-1,20):
-        plt.plot([idxt[np.int(I2[i]-1)],idxq[np.int(I1[i]-1)]],[template[np.int(I2[i]-1)],query[np.int(I1[i]-1)]],'r-',lw=0.5)
+    for i in np.arange(0,len(indices1)-1,20):
+        plt.plot([idxt[np.int(indices2[i]-1)],idxq[np.int(indices1[i]-1)]],[template[np.int(indices2[i]-1)],query[np.int(indices1[i]-1)]],'r-',lw=0.5)
 
     #Save the figure
     manager= plt.get_current_fig_manager()
@@ -165,21 +149,21 @@ def pick_vp_dtw():
     idxqo=[]
     idxqoa=[]
     idxqoh=[]
-    for i in range(0,len(I1)):
-        idxto=np.append(idxto,idxt[np.int(I2[i])-1]) #time vector arranged by index
-        idxqo=np.append(idxqo,idxq[np.int(I1[i])-1]) #time vector arranged by index
-        qo=np.append(qo,query[np.int(I1[i])-1]) #Query function sampled by the index
-        to=np.append(to,template[np.int(I2[i])-1]) #Template function sampled by the index
-    for i in range(0,len(I1h)):    
-        idxtoh=np.append(idxtoh,idxt[np.int(I2h[i])-1]) #time vector arranged by index
-        idxqoh=np.append(idxqoh,idxq[np.int(I1h[i])-1]) #time vector arranged by index
-        qoh=np.append(qoh,queryh[np.int(I1h[i])-1]) #Query function sampled by the index
-        toh=np.append(toh,templateh[np.int(I2h[i])-1]) #Template function sampled by the index
-    for i in range(0,len(I1a)):    
-        idxtoa=np.append(idxtoa,idxt[np.int(I2a[i])-1]) #time vector arranged by index
-        idxqoa=np.append(idxqoa,idxq[np.int(I1a[i])-1]) #time vector arranged by index
-        qoa=np.append(qoa,querya[np.int(I1a[i])-1]) #Query function sampled by the index
-        toa=np.append(toa,templatea[np.int(I2a[i])-1]) #Template function sampled by the index
+    for i in range(0,len(indices1)):
+        idxto=np.append(idxto,idxt[np.int(indices2[i])-1]) #time vector arranged by index
+        idxqo=np.append(idxqo,idxq[np.int(indices1[i])-1]) #time vector arranged by index
+        qo=np.append(qo,query[np.int(indices1[i])-1]) #Query function sampled by the index
+        to=np.append(to,template[np.int(indices2[i])-1]) #Template function sampled by the index
+    for i in range(0,len(indices1h)):    
+        idxtoh=np.append(idxtoh,idxt[np.int(indices2h[i])-1]) #time vector arranged by index
+        idxqoh=np.append(idxqoh,idxq[np.int(indices1h[i])-1]) #time vector arranged by index
+        qoh=np.append(qoh,queryh[np.int(indices1h[i])-1]) #Query function sampled by the index
+        toh=np.append(toh,templateh[np.int(indices2h[i])-1]) #Template function sampled by the index
+    for i in range(0,len(indices1a)):    
+        idxtoa=np.append(idxtoa,idxt[np.int(indices2a[i])-1]) #time vector arranged by index
+        idxqoa=np.append(idxqoa,idxq[np.int(indices1a[i])-1]) #time vector arranged by index
+        qoa=np.append(qoa,querya[np.int(indices1a[i])-1]) #Query function sampled by the index
+        toa=np.append(toa,templatea[np.int(indices2a[i])-1]) #Template function sampled by the index
     #plt.figure('Superposition')
     #plt.plot(qo)
     #plt.plot(to)

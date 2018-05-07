@@ -4,6 +4,13 @@ Created on Sat Apr 08 14:27:30 2017
 
 @author: edur409
 """
+import glob
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import hilbert
+from . import RockPhysics as rp
+from .dtw_c import dtw
+
 
 COORDS = []
 def onpick(event):
@@ -17,25 +24,8 @@ def onpick(event):
     COORDS.append((xdata[ind], ydata[ind]))
     return COORDS
     
-#Import Modules
-import numpy as np
-from numpy.linalg import norm
-import matplotlib.pyplot as plt
-import rpy2.robjects.numpy2ri
-from rpy2.robjects.packages import importr
-from scipy.signal import hilbert
-from matplotlib.ticker import NullFormatter, FormatStrFormatter
-import mcerp3 as mc
-from . import RockPhysics as rp
-import glob
-
 def vs_dtw_saturated_loop():
     global COORDS
-    rpy2.robjects.numpy2ri.activate()
-    # Set up our R namespaces
-    R = rpy2.robjects.r
-    DTW = importr('dtw')
-
     ##Choose the folder with waveforms
     #well=input("Type name of sample (e.g. 'NM11_2087-4B_sat3000'): \n")
 
@@ -131,23 +121,24 @@ def vs_dtw_saturated_loop():
         query=Ss[i_s:f_s]/np.max(np.abs(Ss[i_s:f_s]))
         templateh=np.abs(hilbert(Sd[i_d:f_d]/np.max(np.abs(Sd[i_d:f_d]))))
         queryh=np.abs(hilbert(Ss[i_s:f_s]/np.max(np.abs(Ss[i_s:f_s]))))
-        
-        
+
         # Calculate the alignment vector and corresponding distance (DTW)
-        alignment = R.dtw(query, template, keep=True)
-        alignmenth = R.dtw(queryh, templateh, keep=True)
-        dist = alignment.rx('distance')[0][0] #The lower the distance of alignment, the better the match
-        disth = alignmenth.rx('distance')[0][0]
-        
-        print('Distance of the DTW algorithm (waveform): ',dist)
-        print('Distance of the DTW algorithm (envelope): ',disth)
-        
-        #Indices of alignment
-        I1=alignment.rx('index1')[0]
-        I2=alignment.rx('index2')[0]
-        I1h=alignmenth.rx('index1')[0]
-        I2h=alignmenth.rx('index2')[0]
-        
+        # Delete costs matrix because it can be quite large - and we don't use it.
+        dist, indices1, indices2, costs = dtw(query, template)
+        del costs
+        disth, indices1h, indices2h, costsh = dtw(queryh, templateh)
+        del costsh
+
+        # The lower the distance of alignment, the better the match
+        print('Distance of the DTW algorithm (waveform): {:.3f}'.format(dist))
+        print('Distance of the DTW algorithm (envelope): {:.3f}'.format(disth))
+
+        # Indices of alignment
+        I1 = indices1
+        I2 = indices2
+        I1h = indices1h
+        I2h = indices2h
+
         print('Close the figures to continue running the code...')
         #Plots
         #Plot #1

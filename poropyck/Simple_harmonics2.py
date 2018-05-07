@@ -4,6 +4,14 @@ Created on Tue Feb  6 15:44:40 2018
 
 @author: leo
 """
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import hilbert
+from scipy.signal import blackman
+import mcerp3 as mc
+from . import RockPhysics as rp
+from .dtw_c import dtw
+
 #Subroutine to pick values from the active plot
 def onpick(event):
     global coords
@@ -20,18 +28,6 @@ def crosscorr_lags(A,B):
     C=np.correlate(A,B,mode='full')
     lags=np.linspace(-len(A),len(A),len(C))
     return lags,C
-
-#Import Modules
-import numpy as np
-import matplotlib.pyplot as plt
-import rpy2.robjects.numpy2ri
-from rpy2.robjects.packages import importr
-rpy2.robjects.numpy2ri.activate()
-from scipy.signal import hilbert
-from matplotlib.ticker import NullFormatter, FormatStrFormatter
-import mcerp3 as mc
-from . import RockPhysics as rp
-from scipy.signal import blackman
 
 #Define two functions to compared composed of simple harmonics
 F1=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
@@ -55,12 +51,6 @@ S2=s2[500:1500]*blackman(len(s2[500:1500]))
 #plt.plot(t[0:1000],S1)    
 #plt.plot(t[0:1000]+2,S2)
 #plt.grid('on')
-
-
-#DTW
-# Set up our R namespaces
-R = rpy2.robjects.r
-DTW = importr('dtw') #import the "dtw" function from R
 
 #Choose the sample's folder
 well=input("Type name of sample (e.g. 'Dummy'): \n")
@@ -127,31 +117,29 @@ templateh=np.abs(hilbert(Sd[i_d:f_d]/np.max(np.abs(Sd[i_d:f_d]))))
 queryh=np.abs(hilbert(Ss[i_s:f_s]/np.max(np.abs(Ss[i_s:f_s]))))
 suffix='both' #Suffix for the files
 
-
-
 # Calculate the alignment vector and corresponding distance (DTW)
-alignment = R.dtw(query, template, keep=True)
-alignmenth = R.dtw(queryh, templateh, keep=True)
-alignmenta = R.dtw(querya, templatea, keep=True)
-dist = alignment.rx('distance')[0][0] #The lower the distance of alignment, the better the match
-disth = alignmenth.rx('distance')[0][0]
-dista = alignmenta.rx('distance')[0][0]
+# Delete costs matrix because it can be quite large - and we don't use it.
+dist, indices1, indices2, costs = dtw(query, template)
+del costs
+disth, indices1h, indices2h, costsh = dtw(queryh, templateh)
+del costsh
+dista, indices1a, indices2a, costsa = dtw(querya, templatea)
+del costsa
 
-print('Distance of the DTW algorithm (waveform): ',dist)
-print('Distance of the DTW algorithm (phase): ',dista)
-print('Distance of the DTW algorithm (envelope): ',disth)
+# The lower the distance of alignment, the better the match
+print('Distance of the DTW algorithm (waveform): {:.3f}'.format(dist))
+print('Distance of the DTW algorithm (phase): {:.3f}'.format(dista))
+print('Distance of the DTW algorithm (envelope): {:.3f}'.format(disth))
 
 #Indices of alignment
-I1=alignment.rx('index1')[0]
-I2=alignment.rx('index2')[0]
-I1h=alignmenth.rx('index1')[0]
-I2h=alignmenth.rx('index2')[0]
-I1a=alignmenta.rx('index1')[0]
-I2a=alignmenta.rx('index2')[0]
-
+I1 = indices1
+I2 = indices2
+I1h = indices1h
+I2h = indices2h
+I1a = indices1a
+I2a = indices2a
 
 print('Close the figures to continue running the code...')
-
 #3) PLOT THE OUTPUTS OF THE DTW ALGORITHM
 #PLOTTING THE OUTPUTS OF THE DTW ALGORITHM BEGINS HERE!!!
 #Plots

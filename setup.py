@@ -1,20 +1,28 @@
 """Poropyck setup file"""
-from setuptools import setup
+from setuptools import setup, Extension
+import numpy
+
+EXT_MODULES = [Extension(
+    name='poropyck.dtw_c',
+    sources=['poropyck/dtw_c/dtw_c.pyx'],
+    include_dirs=[numpy.get_include()],
+    extra_compile_args=['-O3'],
+    language='c')]
 
 setup(
     name='poropyck',
-    version='1.0.0',
+    version='1.1.1',
     author='Evert Duran Quintero',
     author_email='edur409@aucklanduni.ac.nz',
     packages=['poropyck'],
     include_package_data=True,
+    ext_modules=EXT_MODULES,
     python_requires='~=3.4',
     install_requires=[
         'numpy>=1.13.3',
         'matplotlib>=2.1.0',
         'scipy>=0.19.0',
-        'mcerp3>=1.0.0',
-        'rpy2>=2.9.0'],
+        'mcerp3>=1.0.0'],
     entry_points={'console_scripts': [
         'install_poropyck_samples = poropyck.install_samples:install_samples',
         'simple_harmonics = poropyck.Simple_harmonics:simple_harmonics',
@@ -27,5 +35,6 @@ setup(
         'densities_porosity = poropyck.Densities_Porosity:densities_porosity',
         'densities_porosity2 = poropyck.Densities_Porosity2:densities_porosity2',
         'elastic_constants = poropyck.Elastic_Constants:elastic_constants',
-        'elastic_constants_pyc = poropyck.Elastic_Constants_Pyc:elastic_constants_pyc'],},
+        'elastic_constants_pyc = poropyck.Elastic_Constants_Pyc:elastic_constants',
+        'pycnometer_densities = poropyck.Pycnometer_densities:pycnometer_densities'],},
     )

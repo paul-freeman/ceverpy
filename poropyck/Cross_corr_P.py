@@ -1,21 +1,23 @@
-# -*- coding: utf-8 -*-
-"""
+"""PICK THE S-ARRIVAL TIMES FOR THE DRY AND SATURATED WAVEFORMS USING DTW
+
 Created on Tue Aug  8 11:32:10 2017
 
 @author: leo
-"""
 
-# PICK THE S-ARRIVAL TIMES FOR THE DRY AND SATURATED WAVEFORMS USING DTW
-"""
 Created on Fri Mar 10 15:54:27 2017
 
 @author: edur409
 """
+import numpy as np
+import scipy as sp
+import matplotlib.pyplot as plt
+from scipy.signal import hilbert
+from . import RockPhysics as rp
+
 
 COORDS=[]
-
-#Subroutine to pick values from the active plot
 def onpick(event):
+    """Subroutine to pick values from the active plot"""
     global COORDS
     thisline = event.artist
     xdata = thisline.get_xdata()
@@ -31,29 +33,11 @@ def crosscorr_lags(A,B):
     lags=np.linspace(-len(A),len(A),len(C))
     return lags,C
 
-#Import Modules
-import numpy as np
-import scipy as sp
-import matplotlib.pyplot as plt
-import rpy2.robjects.numpy2ri
-from rpy2.robjects.packages import importr
-from scipy.signal import hilbert
-from matplotlib.ticker import NullFormatter, FormatStrFormatter
-import mcerp3 as mc
-from . import RockPhysics as rp
-#from waveletFunctions import wavelet
-from scipy.stats import linregress
-
 def cross_corr_p():
     global COORDS
-    rpy2.robjects.numpy2ri.activate()
     #Font size for plots
     font= {'size' : 18}
     plt.rc('font',**font)
-
-    # Set up our R namespaces
-    R = rpy2.robjects.r
-    DTW = importr('dtw') #import the "dtw" function from R
 
     #Choose the sample's folder
     well=input("Type name of sample (e.g. 'NM11_2087_4A'): \n")

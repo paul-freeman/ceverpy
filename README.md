@@ -23,8 +23,6 @@ This ``poropyck`` package is available on PyPI.
     pip install poropyck
 
 Installing via ``pip`` should get most of the Python dependencies you need.
-However, you will still need to install the necessary R packages (covered
-previously).
 
 The following is a list of packages used during development:
 
@@ -33,9 +31,6 @@ The following is a list of packages used during development:
  * matplotlib 2.1.0
  * scipy 0.19.1
  * mcerp3 1.0.0
- * rpy2 2.9.0
- * R version 3.4.2
-   * dtw
 
 ## Scripts
 
@@ -83,4 +78,3 @@ Calculate elastic constants and densities from the pycnometer files:
  * *elastic\_constants*
  * *elastic\_constants\_pyc*
  * *pycnometer\_densities*
-
