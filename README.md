@@ -4,18 +4,6 @@
 
 This will guide you through the steps needed to install ``poropyck``.
 
-### R packages
-
-You will need to have R installed before you will be able to setup ``poropyck``.
-
-The R language and its associated packages must be installed separately.
-Installing R depends on your operating system, but you must ensure you are
-using R version 3.4 or higher.
-
-After installing R, you will need to ensure you have the [Dynamic Time
-Warping](http://dtw.r-forge.r-project.org/) package, ``dtw``. Please refer to
-the installation instructions for this package if needed.
-
 ### Installing the PyPI package
 
 This ``poropyck`` package is available on PyPI.
