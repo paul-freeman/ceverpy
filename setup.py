@@ -22,7 +22,7 @@ setup(
         'numpy>=1.13.3',
         'matplotlib>=2.1.0',
         'scipy>=0.19.0',
-        'mcerp3>=1.0.0'],
+        'mcerp3>=1.0.2'],
     entry_points={'console_scripts': [
         'install_poropyck_samples = poropyck.install_samples:install_samples',
         'simple_harmonics = poropyck.Simple_harmonics:simple_harmonics',
