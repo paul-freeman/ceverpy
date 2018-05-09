@@ -558,8 +558,8 @@ static CYTHON_INLINE float __PYX_NAN() {
   #endif
 #endif
 
-#define __PYX_HAVE__poropyck__dtw_c__dtw_c
-#define __PYX_HAVE_API__poropyck__dtw_c__dtw_c
+#define __PYX_HAVE__dtw
+#define __PYX_HAVE_API__dtw
 /* Early includes */
 #include <string.h>
 #include <stdio.h>
@@ -794,7 +794,7 @@ static const char *__pyx_filename;
 
 
 static const char *__pyx_f[] = {
-  "poropyck/dtw_c/dtw_c.pyx",
+  "poropyck/src/dtw.pyx",
   "__init__.pxd",
   "stringsource",
   "type.pxd",
@@ -2029,7 +2029,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *, cha
 
 /* Module declarations from 'libc.math' */
 
-/* Module declarations from 'poropyck.dtw_c.dtw_c' */
+/* Module declarations from 'dtw' */
 static PyTypeObject *__pyx_array_type = 0;
 static PyTypeObject *__pyx_MemviewEnum_type = 0;
 static PyTypeObject *__pyx_memoryview_type = 0;
@@ -2041,7 +2041,7 @@ static PyObject *contiguous = 0;
 static PyObject *indirect_contiguous = 0;
 static int __pyx_memoryview_thread_locks_used;
 static PyThread_type_lock __pyx_memoryview_thread_locks[8];
-static void __pyx_f_8poropyck_5dtw_c_5dtw_c__calc_costs(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
+static void __pyx_f_3dtw__calc_costs(__Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice, __Pyx_memviewslice); /*proto*/
 static struct __pyx_array_obj *__pyx_array_new(PyObject *, Py_ssize_t, char *, char *, char *); /*proto*/
 static void *__pyx_align_pointer(void *, size_t); /*proto*/
 static PyObject *__pyx_memoryview_new(PyObject *, int, int, __Pyx_TypeInfo *); /*proto*/
@@ -2078,11 +2078,11 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *, 
 static __Pyx_TypeInfo __Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t = { "float64_t", NULL, sizeof(__pyx_t_5numpy_float64_t), { 0 }, 0, 'R', 0, 0 };
 static __Pyx_TypeInfo __Pyx_TypeInfo_double = { "double", NULL, sizeof(double), { 0 }, 0, 'R', 0, 0 };
 static __Pyx_TypeInfo __Pyx_TypeInfo_char = { "char", NULL, sizeof(char), { 0 }, 0, 'H', IS_UNSIGNED(char), 0 };
-#define __Pyx_MODULE_NAME "poropyck.dtw_c.dtw_c"
-extern int __pyx_module_is_main_poropyck__dtw_c__dtw_c;
-int __pyx_module_is_main_poropyck__dtw_c__dtw_c = 0;
+#define __Pyx_MODULE_NAME "dtw"
+extern int __pyx_module_is_main_dtw;
+int __pyx_module_is_main_dtw = 0;
 
-/* Implementation of 'poropyck.dtw_c.dtw_c' */
+/* Implementation of 'dtw' */
 static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_ValueError;
 static PyObject *__pyx_builtin_RuntimeError;
@@ -2172,14 +2172,13 @@ static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_pyx_unpickle_Enum[] = "__pyx_unpickle_Enum";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_strided_and_direct[] = "<strided and direct>";
-static const char __pyx_k_poropyck_dtw_c_dtw_c[] = "poropyck.dtw_c.dtw_c";
+static const char __pyx_k_poropyck_src_dtw_pyx[] = "poropyck/src/dtw.pyx";
 static const char __pyx_k_strided_and_indirect[] = "<strided and indirect>";
 static const char __pyx_k_contiguous_and_direct[] = "<contiguous and direct>";
 static const char __pyx_k_MemoryView_of_r_object[] = "<MemoryView of %r object>";
 static const char __pyx_k_MemoryView_of_r_at_0x_x[] = "<MemoryView of %r at 0x%x>";
 static const char __pyx_k_contiguous_and_indirect[] = "<contiguous and indirect>";
 static const char __pyx_k_Cannot_index_with_type_s[] = "Cannot index with type '%s'";
-static const char __pyx_k_poropyck_dtw_c_dtw_c_pyx[] = "poropyck/dtw_c/dtw_c.pyx";
 static const char __pyx_k_Invalid_shape_in_axis_d_d[] = "Invalid shape in axis %d: %d.";
 static const char __pyx_k_itemsize_0_for_cython_array[] = "itemsize <= 0 for cython.array";
 static const char __pyx_k_ndarray_is_not_C_contiguous[] = "ndarray is not C contiguous";
@@ -2286,8 +2285,7 @@ static PyObject *__pyx_n_s_obj;
 static PyObject *__pyx_n_s_pack;
 static PyObject *__pyx_n_s_path;
 static PyObject *__pyx_n_s_pickle;
-static PyObject *__pyx_n_s_poropyck_dtw_c_dtw_c;
-static PyObject *__pyx_kp_s_poropyck_dtw_c_dtw_c_pyx;
+static PyObject *__pyx_kp_s_poropyck_src_dtw_pyx;
 static PyObject *__pyx_n_s_pyx_PickleError;
 static PyObject *__pyx_n_s_pyx_checksum;
 static PyObject *__pyx_n_s_pyx_getbuffer;
@@ -2319,7 +2317,7 @@ static PyObject *__pyx_kp_s_unable_to_allocate_shape_and_str;
 static PyObject *__pyx_kp_u_unknown_dtype_code_in_numpy_pxd;
 static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_update;
-static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_list1, PyArrayObject *__pyx_v_list2); /* proto */
+static PyObject *__pyx_pf_3dtw_dtw(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_list1, PyArrayObject *__pyx_v_list2); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
@@ -2413,7 +2411,7 @@ static PyObject *__pyx_codeobj__32;
 static PyObject *__pyx_codeobj__39;
 /* Late includes */
 
-/* "poropyck/dtw_c/dtw_c.pyx":7
+/* "dtw.pyx":7
  * 
  * 
  * def dtw(np.ndarray[np.float64_t, ndim=1, mode="c"] list1, np.ndarray[np.float64_t, ndim=1, mode="c"] list2):             # <<<<<<<<<<<<<<
@@ -2422,9 +2420,9 @@ static PyObject *__pyx_codeobj__39;
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_8poropyck_5dtw_c_5dtw_c_1dtw(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_8poropyck_5dtw_c_5dtw_c_1dtw = {"dtw", (PyCFunction)__pyx_pw_8poropyck_5dtw_c_5dtw_c_1dtw, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_8poropyck_5dtw_c_5dtw_c_1dtw(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_3dtw_1dtw(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_3dtw_1dtw = {"dtw", (PyCFunction)__pyx_pw_3dtw_1dtw, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_3dtw_1dtw(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyArrayObject *__pyx_v_list1 = 0;
   PyArrayObject *__pyx_v_list2 = 0;
   PyObject *__pyx_r = 0;
@@ -2472,13 +2470,13 @@ static PyObject *__pyx_pw_8poropyck_5dtw_c_5dtw_c_1dtw(PyObject *__pyx_self, PyO
   __pyx_L5_argtuple_error:;
   __Pyx_RaiseArgtupleInvalid("dtw", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 7, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("poropyck.dtw_c.dtw_c.dtw", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("dtw.dtw", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_list1), __pyx_ptype_5numpy_ndarray, 1, "list1", 0))) __PYX_ERR(0, 7, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_list2), __pyx_ptype_5numpy_ndarray, 1, "list2", 0))) __PYX_ERR(0, 7, __pyx_L1_error)
-  __pyx_r = __pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(__pyx_self, __pyx_v_list1, __pyx_v_list2);
+  __pyx_r = __pyx_pf_3dtw_dtw(__pyx_self, __pyx_v_list1, __pyx_v_list2);
 
   /* function exit code */
   goto __pyx_L0;
@@ -2489,7 +2487,7 @@ static PyObject *__pyx_pw_8poropyck_5dtw_c_5dtw_c_1dtw(PyObject *__pyx_self, PyO
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_list1, PyArrayObject *__pyx_v_list2) {
+static PyObject *__pyx_pf_3dtw_dtw(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_list1, PyArrayObject *__pyx_v_list2) {
   __Pyx_memviewslice __pyx_v_costs = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_path = { 0, 0, { 0 }, { 0 }, { 0 } };
   int __pyx_v_i;
@@ -2545,7 +2543,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
   }
   __pyx_pybuffernd_list2.diminfo[0].strides = __pyx_pybuffernd_list2.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_list2.diminfo[0].shape = __pyx_pybuffernd_list2.rcbuffer->pybuffer.shape[0];
 
-  /* "poropyck/dtw_c/dtw_c.pyx":8
+  /* "dtw.pyx":8
  * 
  * def dtw(np.ndarray[np.float64_t, ndim=1, mode="c"] list1, np.ndarray[np.float64_t, ndim=1, mode="c"] list2):
  *     cdef double[:, ::1] costs = np.empty((len(list1)+1, len(list2)+1), dtype='float64')             # <<<<<<<<<<<<<<
@@ -2590,7 +2588,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
   __pyx_t_6.memview = NULL;
   __pyx_t_6.data = NULL;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":9
+  /* "dtw.pyx":9
  * def dtw(np.ndarray[np.float64_t, ndim=1, mode="c"] list1, np.ndarray[np.float64_t, ndim=1, mode="c"] list2):
  *     cdef double[:, ::1] costs = np.empty((len(list1)+1, len(list2)+1), dtype='float64')
  *     cdef char[:, ::1] path = np.empty((len(list1)+1, len(list2)+1), dtype='uint8')             # <<<<<<<<<<<<<<
@@ -2635,7 +2633,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":11
+  /* "dtw.pyx":11
  *     cdef char[:, ::1] path = np.empty((len(list1)+1, len(list2)+1), dtype='uint8')
  *     cdef int i, j
  *     _calc_costs(costs, path, list1, list2)             # <<<<<<<<<<<<<<
@@ -2644,7 +2642,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
  */
   __pyx_t_8 = __Pyx_PyObject_to_MemoryviewSlice_dc_double(((PyObject *)__pyx_v_list1), PyBUF_WRITABLE); if (unlikely(!__pyx_t_8.memview)) __PYX_ERR(0, 11, __pyx_L1_error)
   __pyx_t_9 = __Pyx_PyObject_to_MemoryviewSlice_dc_double(((PyObject *)__pyx_v_list2), PyBUF_WRITABLE); if (unlikely(!__pyx_t_9.memview)) __PYX_ERR(0, 11, __pyx_L1_error)
-  __pyx_f_8poropyck_5dtw_c_5dtw_c__calc_costs(__pyx_v_costs, __pyx_v_path, __pyx_t_8, __pyx_t_9);
+  __pyx_f_3dtw__calc_costs(__pyx_v_costs, __pyx_v_path, __pyx_t_8, __pyx_t_9);
   __PYX_XDEC_MEMVIEW(&__pyx_t_8, 1);
   __pyx_t_8.memview = NULL;
   __pyx_t_8.data = NULL;
@@ -2652,7 +2650,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
   __pyx_t_9.memview = NULL;
   __pyx_t_9.data = NULL;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":12
+  /* "dtw.pyx":12
  *     cdef int i, j
  *     _calc_costs(costs, path, list1, list2)
  *     i = costs.shape[0] - 1             # <<<<<<<<<<<<<<
@@ -2661,7 +2659,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
  */
   __pyx_v_i = ((__pyx_v_costs.shape[0]) - 1);
 
-  /* "poropyck/dtw_c/dtw_c.pyx":13
+  /* "dtw.pyx":13
  *     _calc_costs(costs, path, list1, list2)
  *     i = costs.shape[0] - 1
  *     j = costs.shape[1] - 1             # <<<<<<<<<<<<<<
@@ -2670,7 +2668,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
  */
   __pyx_v_j = ((__pyx_v_costs.shape[1]) - 1);
 
-  /* "poropyck/dtw_c/dtw_c.pyx":14
+  /* "dtw.pyx":14
  *     i = costs.shape[0] - 1
  *     j = costs.shape[1] - 1
  *     index1 = [i]             # <<<<<<<<<<<<<<
@@ -2687,7 +2685,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
   __pyx_v_index1 = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":15
+  /* "dtw.pyx":15
  *     j = costs.shape[1] - 1
  *     index1 = [i]
  *     index2 = [j]             # <<<<<<<<<<<<<<
@@ -2704,7 +2702,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
   __pyx_v_index2 = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":16
+  /* "dtw.pyx":16
  *     index1 = [i]
  *     index2 = [j]
  *     while i > 1 or j > 1:             # <<<<<<<<<<<<<<
@@ -2723,7 +2721,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
     __pyx_L5_bool_binop_done:;
     if (!__pyx_t_10) break;
 
-    /* "poropyck/dtw_c/dtw_c.pyx":17
+    /* "dtw.pyx":17
  *     index2 = [j]
  *     while i > 1 or j > 1:
  *         if path[i, j] == 1:             # <<<<<<<<<<<<<<
@@ -2748,7 +2746,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
     __pyx_t_10 = (((*((char *) ( /* dim=1 */ ((char *) (((char *) ( /* dim=0 */ (__pyx_v_path.data + __pyx_t_12 * __pyx_v_path.strides[0]) )) + __pyx_t_13)) ))) == 1) != 0);
     if (__pyx_t_10) {
 
-      /* "poropyck/dtw_c/dtw_c.pyx":18
+      /* "dtw.pyx":18
  *     while i > 1 or j > 1:
  *         if path[i, j] == 1:
  *             i, j = i-1, j             # <<<<<<<<<<<<<<
@@ -2760,7 +2758,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
       __pyx_v_i = __pyx_t_15;
       __pyx_v_j = __pyx_t_14;
 
-      /* "poropyck/dtw_c/dtw_c.pyx":17
+      /* "dtw.pyx":17
  *     index2 = [j]
  *     while i > 1 or j > 1:
  *         if path[i, j] == 1:             # <<<<<<<<<<<<<<
@@ -2770,7 +2768,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
       goto __pyx_L7;
     }
 
-    /* "poropyck/dtw_c/dtw_c.pyx":19
+    /* "dtw.pyx":19
  *         if path[i, j] == 1:
  *             i, j = i-1, j
  *         elif path[i, j] == 2:             # <<<<<<<<<<<<<<
@@ -2795,7 +2793,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
     __pyx_t_10 = (((*((char *) ( /* dim=1 */ ((char *) (((char *) ( /* dim=0 */ (__pyx_v_path.data + __pyx_t_16 * __pyx_v_path.strides[0]) )) + __pyx_t_17)) ))) == 2) != 0);
     if (__pyx_t_10) {
 
-      /* "poropyck/dtw_c/dtw_c.pyx":20
+      /* "dtw.pyx":20
  *             i, j = i-1, j
  *         elif path[i, j] == 2:
  *             i, j = i, j-1             # <<<<<<<<<<<<<<
@@ -2807,7 +2805,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
       __pyx_v_i = __pyx_t_14;
       __pyx_v_j = __pyx_t_15;
 
-      /* "poropyck/dtw_c/dtw_c.pyx":19
+      /* "dtw.pyx":19
  *         if path[i, j] == 1:
  *             i, j = i-1, j
  *         elif path[i, j] == 2:             # <<<<<<<<<<<<<<
@@ -2817,7 +2815,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
       goto __pyx_L7;
     }
 
-    /* "poropyck/dtw_c/dtw_c.pyx":22
+    /* "dtw.pyx":22
  *             i, j = i, j-1
  *         else: # path[i, j] == 3:
  *             i, j = i-1, j-1             # <<<<<<<<<<<<<<
@@ -2832,7 +2830,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
     }
     __pyx_L7:;
 
-    /* "poropyck/dtw_c/dtw_c.pyx":23
+    /* "dtw.pyx":23
  *         else: # path[i, j] == 3:
  *             i, j = i-1, j-1
  *         index1.append(i)             # <<<<<<<<<<<<<<
@@ -2844,7 +2842,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
     __pyx_t_19 = __Pyx_PyList_Append(__pyx_v_index1, __pyx_t_1); if (unlikely(__pyx_t_19 == ((int)-1))) __PYX_ERR(0, 23, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "poropyck/dtw_c/dtw_c.pyx":24
+    /* "dtw.pyx":24
  *             i, j = i-1, j-1
  *         index1.append(i)
  *         index2.append(j)             # <<<<<<<<<<<<<<
@@ -2857,7 +2855,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
 
-  /* "poropyck/dtw_c/dtw_c.pyx":25
+  /* "dtw.pyx":25
  *         index1.append(i)
  *         index2.append(j)
  *     index1.reverse()             # <<<<<<<<<<<<<<
@@ -2866,7 +2864,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
  */
   __pyx_t_19 = PyList_Reverse(__pyx_v_index1); if (unlikely(__pyx_t_19 == ((int)-1))) __PYX_ERR(0, 25, __pyx_L1_error)
 
-  /* "poropyck/dtw_c/dtw_c.pyx":26
+  /* "dtw.pyx":26
  *         index2.append(j)
  *     index1.reverse()
  *     index2.reverse()             # <<<<<<<<<<<<<<
@@ -2875,7 +2873,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
  */
   __pyx_t_19 = PyList_Reverse(__pyx_v_index2); if (unlikely(__pyx_t_19 == ((int)-1))) __PYX_ERR(0, 26, __pyx_L1_error)
 
-  /* "poropyck/dtw_c/dtw_c.pyx":27
+  /* "dtw.pyx":27
  *     index1.reverse()
  *     index2.reverse()
  *     return (float(costs[-1, -1]),             # <<<<<<<<<<<<<<
@@ -2901,7 +2899,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
   __pyx_t_1 = PyFloat_FromDouble((*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_costs.data + __pyx_t_20 * __pyx_v_costs.strides[0]) )) + __pyx_t_21)) )))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
 
-  /* "poropyck/dtw_c/dtw_c.pyx":28
+  /* "dtw.pyx":28
  *     index2.reverse()
  *     return (float(costs[-1, -1]),
  *             np.asarray(index1, dtype=float),             # <<<<<<<<<<<<<<
@@ -2927,7 +2925,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":29
+  /* "dtw.pyx":29
  *     return (float(costs[-1, -1]),
  *             np.asarray(index1, dtype=float),
  *             np.asarray(index2, dtype=float),             # <<<<<<<<<<<<<<
@@ -2953,7 +2951,7 @@ static PyObject *__pyx_pf_8poropyck_5dtw_c_5dtw_c_dtw(CYTHON_UNUSED PyObject *__
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":30
+  /* "dtw.pyx":30
  *             np.asarray(index1, dtype=float),
  *             np.asarray(index2, dtype=float),
  *             costs[1:, 1:])             # <<<<<<<<<<<<<<
@@ -3004,7 +3002,7 @@ __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_6, 2, (PyObject *(*)(char *)) __p
   __pyx_t_6.memview = NULL;
   __pyx_t_6.data = NULL;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":27
+  /* "dtw.pyx":27
  *     index1.reverse()
  *     index2.reverse()
  *     return (float(costs[-1, -1]),             # <<<<<<<<<<<<<<
@@ -3029,7 +3027,7 @@ __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_6, 2, (PyObject *(*)(char *)) __p
   __pyx_t_5 = 0;
   goto __pyx_L0;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":7
+  /* "dtw.pyx":7
  * 
  * 
  * def dtw(np.ndarray[np.float64_t, ndim=1, mode="c"] list1, np.ndarray[np.float64_t, ndim=1, mode="c"] list2):             # <<<<<<<<<<<<<<
@@ -3056,7 +3054,7 @@ __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_6, 2, (PyObject *(*)(char *)) __p
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_list1.rcbuffer->pybuffer);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_list2.rcbuffer->pybuffer);
   __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
-  __Pyx_AddTraceback("poropyck.dtw_c.dtw_c.dtw", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("dtw.dtw", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   goto __pyx_L2;
   __pyx_L0:;
@@ -3072,7 +3070,7 @@ __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_6, 2, (PyObject *(*)(char *)) __p
   return __pyx_r;
 }
 
-/* "poropyck/dtw_c/dtw_c.pyx":35
+/* "dtw.pyx":35
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cdef void _calc_costs(double[:, ::1] costs, char[:, ::1] path, double[::1] list1, double[::1] list2):             # <<<<<<<<<<<<<<
@@ -3080,7 +3078,7 @@ __pyx_t_4 = __pyx_memoryview_fromslice(__pyx_t_6, 2, (PyObject *(*)(char *)) __p
  *     costs[0, 0] = -(fabs(list1[0] - list2[0]))
  */
 
-static void __pyx_f_8poropyck_5dtw_c_5dtw_c__calc_costs(__Pyx_memviewslice __pyx_v_costs, __Pyx_memviewslice __pyx_v_path, __Pyx_memviewslice __pyx_v_list1, __Pyx_memviewslice __pyx_v_list2) {
+static void __pyx_f_3dtw__calc_costs(__Pyx_memviewslice __pyx_v_costs, __Pyx_memviewslice __pyx_v_path, __Pyx_memviewslice __pyx_v_list1, __Pyx_memviewslice __pyx_v_list2) {
   int __pyx_v_i;
   int __pyx_v_j;
   double __pyx_v_distance;
@@ -3139,7 +3137,7 @@ static void __pyx_f_8poropyck_5dtw_c_5dtw_c__calc_costs(__Pyx_memviewslice __pyx
   Py_ssize_t __pyx_t_52;
   __Pyx_RefNannySetupContext("_calc_costs", 0);
 
-  /* "poropyck/dtw_c/dtw_c.pyx":37
+  /* "dtw.pyx":37
  * cdef void _calc_costs(double[:, ::1] costs, char[:, ::1] path, double[::1] list1, double[::1] list2):
  *     cdef int i, j
  *     costs[0, 0] = -(fabs(list1[0] - list2[0]))             # <<<<<<<<<<<<<<
@@ -3152,7 +3150,7 @@ static void __pyx_f_8poropyck_5dtw_c_5dtw_c__calc_costs(__Pyx_memviewslice __pyx
   __pyx_t_4 = 0;
   *((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_costs.data + __pyx_t_3 * __pyx_v_costs.strides[0]) )) + __pyx_t_4)) )) = (-fabs(((*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_list1.data) + __pyx_t_1)) ))) - (*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_list2.data) + __pyx_t_2)) ))))));
 
-  /* "poropyck/dtw_c/dtw_c.pyx":38
+  /* "dtw.pyx":38
  *     cdef int i, j
  *     costs[0, 0] = -(fabs(list1[0] - list2[0]))
  *     costs[0, 1:] = INFINITY             # <<<<<<<<<<<<<<
@@ -3209,7 +3207,7 @@ __pyx_t_6 = -1;
   __pyx_t_5.memview = NULL;
   __pyx_t_5.data = NULL;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":39
+  /* "dtw.pyx":39
  *     costs[0, 0] = -(fabs(list1[0] - list2[0]))
  *     costs[0, 1:] = INFINITY
  *     costs[1:, 0] = INFINITY             # <<<<<<<<<<<<<<
@@ -3268,7 +3266,7 @@ __pyx_t_6 = -1;
   __pyx_t_7.memview = NULL;
   __pyx_t_7.data = NULL;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":40
+  /* "dtw.pyx":40
  *     costs[0, 1:] = INFINITY
  *     costs[1:, 0] = INFINITY
  *     path[0, 0] = 0             # <<<<<<<<<<<<<<
@@ -3279,7 +3277,7 @@ __pyx_t_6 = -1;
   __pyx_t_9 = 0;
   *((char *) ( /* dim=1 */ ((char *) (((char *) ( /* dim=0 */ (__pyx_v_path.data + __pyx_t_8 * __pyx_v_path.strides[0]) )) + __pyx_t_9)) )) = 0;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":41
+  /* "dtw.pyx":41
  *     costs[1:, 0] = INFINITY
  *     path[0, 0] = 0
  *     path[0, 1:] = 0             # <<<<<<<<<<<<<<
@@ -3336,7 +3334,7 @@ __pyx_t_6 = -1;
   __pyx_t_10.memview = NULL;
   __pyx_t_10.data = NULL;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":42
+  /* "dtw.pyx":42
  *     path[0, 0] = 0
  *     path[0, 1:] = 0
  *     path[1:, 0] = 0             # <<<<<<<<<<<<<<
@@ -3395,7 +3393,7 @@ __pyx_t_6 = -1;
   __pyx_t_11.memview = NULL;
   __pyx_t_11.data = NULL;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":43
+  /* "dtw.pyx":43
  *     path[0, 1:] = 0
  *     path[1:, 0] = 0
  *     for i in range(1, costs.shape[0]):             # <<<<<<<<<<<<<<
@@ -3407,7 +3405,7 @@ __pyx_t_6 = -1;
   for (__pyx_t_6 = 1; __pyx_t_6 < __pyx_t_13; __pyx_t_6+=1) {
     __pyx_v_i = __pyx_t_6;
 
-    /* "poropyck/dtw_c/dtw_c.pyx":44
+    /* "dtw.pyx":44
  *     path[1:, 0] = 0
  *     for i in range(1, costs.shape[0]):
  *         for j in range(1, costs.shape[1]):             # <<<<<<<<<<<<<<
@@ -3419,7 +3417,7 @@ __pyx_t_6 = -1;
     for (__pyx_t_16 = 1; __pyx_t_16 < __pyx_t_15; __pyx_t_16+=1) {
       __pyx_v_j = __pyx_t_16;
 
-      /* "poropyck/dtw_c/dtw_c.pyx":45
+      /* "dtw.pyx":45
  *     for i in range(1, costs.shape[0]):
  *         for j in range(1, costs.shape[1]):
  *             distance = fabs(list1[i-1] - list2[j-1])             # <<<<<<<<<<<<<<
@@ -3430,7 +3428,7 @@ __pyx_t_6 = -1;
       __pyx_t_18 = (__pyx_v_j - 1);
       __pyx_v_distance = fabs(((*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_list1.data) + __pyx_t_17)) ))) - (*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_list2.data) + __pyx_t_18)) )))));
 
-      /* "poropyck/dtw_c/dtw_c.pyx":46
+      /* "dtw.pyx":46
  *         for j in range(1, costs.shape[1]):
  *             distance = fabs(list1[i-1] - list2[j-1])
  *             if costs[i-1, j] < costs[i, j-1] and  costs[i-1, j] - costs[i-1, j-1] < distance:             # <<<<<<<<<<<<<<
@@ -3456,7 +3454,7 @@ __pyx_t_6 = -1;
       __pyx_L8_bool_binop_done:;
       if (__pyx_t_19) {
 
-        /* "poropyck/dtw_c/dtw_c.pyx":47
+        /* "dtw.pyx":47
  *             distance = fabs(list1[i-1] - list2[j-1])
  *             if costs[i-1, j] < costs[i, j-1] and  costs[i-1, j] - costs[i-1, j-1] < distance:
  *                 costs[i, j], path[i, j] = costs[i-1, j] + distance, 1             # <<<<<<<<<<<<<<
@@ -3474,7 +3472,7 @@ __pyx_t_6 = -1;
         __pyx_t_36 = __pyx_v_j;
         *((char *) ( /* dim=1 */ ((char *) (((char *) ( /* dim=0 */ (__pyx_v_path.data + __pyx_t_35 * __pyx_v_path.strides[0]) )) + __pyx_t_36)) )) = __pyx_t_32;
 
-        /* "poropyck/dtw_c/dtw_c.pyx":48
+        /* "dtw.pyx":48
  *             if costs[i-1, j] < costs[i, j-1] and  costs[i-1, j] - costs[i-1, j-1] < distance:
  *                 costs[i, j], path[i, j] = costs[i-1, j] + distance, 1
  *                 continue             # <<<<<<<<<<<<<<
@@ -3483,7 +3481,7 @@ __pyx_t_6 = -1;
  */
         goto __pyx_L5_continue;
 
-        /* "poropyck/dtw_c/dtw_c.pyx":46
+        /* "dtw.pyx":46
  *         for j in range(1, costs.shape[1]):
  *             distance = fabs(list1[i-1] - list2[j-1])
  *             if costs[i-1, j] < costs[i, j-1] and  costs[i-1, j] - costs[i-1, j-1] < distance:             # <<<<<<<<<<<<<<
@@ -3492,7 +3490,7 @@ __pyx_t_6 = -1;
  */
       }
 
-      /* "poropyck/dtw_c/dtw_c.pyx":49
+      /* "dtw.pyx":49
  *                 costs[i, j], path[i, j] = costs[i-1, j] + distance, 1
  *                 continue
  *             if costs[i, j-1] - costs[i-1, j-1] < distance:             # <<<<<<<<<<<<<<
@@ -3506,7 +3504,7 @@ __pyx_t_6 = -1;
       __pyx_t_19 = ((((*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_costs.data + __pyx_t_37 * __pyx_v_costs.strides[0]) )) + __pyx_t_38)) ))) - (*((double *) ( /* dim=1 */ ((char *) (((double *) ( /* dim=0 */ (__pyx_v_costs.data + __pyx_t_39 * __pyx_v_costs.strides[0]) )) + __pyx_t_40)) )))) < __pyx_v_distance) != 0);
       if (__pyx_t_19) {
 
-        /* "poropyck/dtw_c/dtw_c.pyx":50
+        /* "dtw.pyx":50
  *                 continue
  *             if costs[i, j-1] - costs[i-1, j-1] < distance:
  *                 costs[i, j], path[i, j] = costs[i, j-1] + distance, 2             # <<<<<<<<<<<<<<
@@ -3524,7 +3522,7 @@ __pyx_t_6 = -1;
         __pyx_t_46 = __pyx_v_j;
         *((char *) ( /* dim=1 */ ((char *) (((char *) ( /* dim=0 */ (__pyx_v_path.data + __pyx_t_45 * __pyx_v_path.strides[0]) )) + __pyx_t_46)) )) = __pyx_t_32;
 
-        /* "poropyck/dtw_c/dtw_c.pyx":51
+        /* "dtw.pyx":51
  *             if costs[i, j-1] - costs[i-1, j-1] < distance:
  *                 costs[i, j], path[i, j] = costs[i, j-1] + distance, 2
  *                 continue             # <<<<<<<<<<<<<<
@@ -3533,7 +3531,7 @@ __pyx_t_6 = -1;
  */
         goto __pyx_L5_continue;
 
-        /* "poropyck/dtw_c/dtw_c.pyx":49
+        /* "dtw.pyx":49
  *                 costs[i, j], path[i, j] = costs[i-1, j] + distance, 1
  *                 continue
  *             if costs[i, j-1] - costs[i-1, j-1] < distance:             # <<<<<<<<<<<<<<
@@ -3542,7 +3540,7 @@ __pyx_t_6 = -1;
  */
       }
 
-      /* "poropyck/dtw_c/dtw_c.pyx":52
+      /* "dtw.pyx":52
  *                 costs[i, j], path[i, j] = costs[i, j-1] + distance, 2
  *                 continue
  *             costs[i, j], path[i, j] = costs[i-1, j-1] + distance * 2, 3             # <<<<<<<<<<<<<<
@@ -3562,14 +3560,14 @@ __pyx_t_6 = -1;
     }
   }
 
-  /* "poropyck/dtw_c/dtw_c.pyx":53
+  /* "dtw.pyx":53
  *                 continue
  *             costs[i, j], path[i, j] = costs[i-1, j-1] + distance * 2, 3
  *     return             # <<<<<<<<<<<<<<
  */
   goto __pyx_L0;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":35
+  /* "dtw.pyx":35
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cdef void _calc_costs(double[:, ::1] costs, char[:, ::1] path, double[::1] list1, double[::1] list2):             # <<<<<<<<<<<<<<
@@ -3583,7 +3581,7 @@ __pyx_t_6 = -1;
   __PYX_XDEC_MEMVIEW(&__pyx_t_7, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_t_10, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_t_11, 1);
-  __Pyx_WriteUnraisable("poropyck.dtw_c.dtw_c._calc_costs", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __Pyx_WriteUnraisable("dtw._calc_costs", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
 }
@@ -19088,7 +19086,7 @@ static PyBufferProcs __pyx_tp_as_buffer_array = {
 
 static PyTypeObject __pyx_type___pyx_array = {
   PyVarObject_HEAD_INIT(0, 0)
-  "poropyck.dtw_c.dtw_c.array", /*tp_name*/
+  "dtw.array", /*tp_name*/
   sizeof(struct __pyx_array_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_array, /*tp_dealloc*/
@@ -19196,7 +19194,7 @@ static PyMethodDef __pyx_methods_Enum[] = {
 
 static PyTypeObject __pyx_type___pyx_MemviewEnum = {
   PyVarObject_HEAD_INIT(0, 0)
-  "poropyck.dtw_c.dtw_c.Enum", /*tp_name*/
+  "dtw.Enum", /*tp_name*/
   sizeof(struct __pyx_MemviewEnum_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_Enum, /*tp_dealloc*/
@@ -19446,7 +19444,7 @@ static PyBufferProcs __pyx_tp_as_buffer_memoryview = {
 
 static PyTypeObject __pyx_type___pyx_memoryview = {
   PyVarObject_HEAD_INIT(0, 0)
-  "poropyck.dtw_c.dtw_c.memoryview", /*tp_name*/
+  "dtw.memoryview", /*tp_name*/
   sizeof(struct __pyx_memoryview_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc_memoryview, /*tp_dealloc*/
@@ -19573,7 +19571,7 @@ static struct PyGetSetDef __pyx_getsets__memoryviewslice[] = {
 
 static PyTypeObject __pyx_type___pyx_memoryviewslice = {
   PyVarObject_HEAD_INIT(0, 0)
-  "poropyck.dtw_c.dtw_c._memoryviewslice", /*tp_name*/
+  "dtw._memoryviewslice", /*tp_name*/
   sizeof(struct __pyx_memoryviewslice_obj), /*tp_basicsize*/
   0, /*tp_itemsize*/
   __pyx_tp_dealloc__memoryviewslice, /*tp_dealloc*/
@@ -19644,17 +19642,17 @@ static PyMethodDef __pyx_methods[] = {
 #if PY_MAJOR_VERSION >= 3
 #if CYTHON_PEP489_MULTI_PHASE_INIT
 static PyObject* __pyx_pymod_create(PyObject *spec, PyModuleDef *def); /*proto*/
-static int __pyx_pymod_exec_dtw_c(PyObject* module); /*proto*/
+static int __pyx_pymod_exec_dtw(PyObject* module); /*proto*/
 static PyModuleDef_Slot __pyx_moduledef_slots[] = {
   {Py_mod_create, (void*)__pyx_pymod_create},
-  {Py_mod_exec, (void*)__pyx_pymod_exec_dtw_c},
+  {Py_mod_exec, (void*)__pyx_pymod_exec_dtw},
   {0, NULL}
 };
 #endif
 
 static struct PyModuleDef __pyx_moduledef = {
     PyModuleDef_HEAD_INIT,
-    "dtw_c",
+    "dtw",
     0, /* m_doc */
   #if CYTHON_PEP489_MULTI_PHASE_INIT
     0, /* m_size */
@@ -19755,8 +19753,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_pack, __pyx_k_pack, sizeof(__pyx_k_pack), 0, 0, 1, 1},
   {&__pyx_n_s_path, __pyx_k_path, sizeof(__pyx_k_path), 0, 0, 1, 1},
   {&__pyx_n_s_pickle, __pyx_k_pickle, sizeof(__pyx_k_pickle), 0, 0, 1, 1},
-  {&__pyx_n_s_poropyck_dtw_c_dtw_c, __pyx_k_poropyck_dtw_c_dtw_c, sizeof(__pyx_k_poropyck_dtw_c_dtw_c), 0, 0, 1, 1},
-  {&__pyx_kp_s_poropyck_dtw_c_dtw_c_pyx, __pyx_k_poropyck_dtw_c_dtw_c_pyx, sizeof(__pyx_k_poropyck_dtw_c_dtw_c_pyx), 0, 0, 1, 0},
+  {&__pyx_kp_s_poropyck_src_dtw_pyx, __pyx_k_poropyck_src_dtw_pyx, sizeof(__pyx_k_poropyck_src_dtw_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_pyx_PickleError, __pyx_k_pyx_PickleError, sizeof(__pyx_k_pyx_PickleError), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_checksum, __pyx_k_pyx_checksum, sizeof(__pyx_k_pyx_checksum), 0, 0, 1, 1},
   {&__pyx_n_s_pyx_getbuffer, __pyx_k_pyx_getbuffer, sizeof(__pyx_k_pyx_getbuffer), 0, 0, 1, 1},
@@ -20132,7 +20129,7 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__30);
   __Pyx_GIVEREF(__pyx_tuple__30);
 
-  /* "poropyck/dtw_c/dtw_c.pyx":7
+  /* "dtw.pyx":7
  * 
  * 
  * def dtw(np.ndarray[np.float64_t, ndim=1, mode="c"] list1, np.ndarray[np.float64_t, ndim=1, mode="c"] list2):             # <<<<<<<<<<<<<<
@@ -20142,7 +20139,7 @@ static int __Pyx_InitCachedConstants(void) {
   __pyx_tuple__31 = PyTuple_Pack(8, __pyx_n_s_list1, __pyx_n_s_list2, __pyx_n_s_costs, __pyx_n_s_path, __pyx_n_s_i, __pyx_n_s_j, __pyx_n_s_index1, __pyx_n_s_index2); if (unlikely(!__pyx_tuple__31)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__31);
   __Pyx_GIVEREF(__pyx_tuple__31);
-  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(2, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__31, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_poropyck_dtw_c_dtw_c_pyx, __pyx_n_s_dtw, 7, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(2, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__31, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_poropyck_src_dtw_pyx, __pyx_n_s_dtw, 7, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) __PYX_ERR(0, 7, __pyx_L1_error)
 
   /* "View.MemoryView":285
  *         return self.name
@@ -20382,11 +20379,11 @@ static int __Pyx_modinit_function_import_code(void) {
 
 
 #if PY_MAJOR_VERSION < 3
-__Pyx_PyMODINIT_FUNC initdtw_c(void) CYTHON_SMALL_CODE; /*proto*/
-__Pyx_PyMODINIT_FUNC initdtw_c(void)
+__Pyx_PyMODINIT_FUNC initdtw(void) CYTHON_SMALL_CODE; /*proto*/
+__Pyx_PyMODINIT_FUNC initdtw(void)
 #else
-__Pyx_PyMODINIT_FUNC PyInit_dtw_c(void) CYTHON_SMALL_CODE; /*proto*/
-__Pyx_PyMODINIT_FUNC PyInit_dtw_c(void)
+__Pyx_PyMODINIT_FUNC PyInit_dtw(void) CYTHON_SMALL_CODE; /*proto*/
+__Pyx_PyMODINIT_FUNC PyInit_dtw(void)
 #if CYTHON_PEP489_MULTI_PHASE_INIT
 {
   return PyModuleDef_Init(&__pyx_moduledef);
@@ -20426,7 +20423,7 @@ bad:
 }
 
 
-static int __pyx_pymod_exec_dtw_c(PyObject *__pyx_pyinit_module)
+static int __pyx_pymod_exec_dtw(PyObject *__pyx_pyinit_module)
 #endif
 #endif
 {
@@ -20447,7 +20444,7 @@ if (!__Pyx_RefNanny) {
       Py_FatalError("failed to import 'refnanny' module");
 }
 #endif
-  __Pyx_RefNannySetupContext("__Pyx_PyMODINIT_FUNC PyInit_dtw_c(void)", 0);
+  __Pyx_RefNannySetupContext("__Pyx_PyMODINIT_FUNC PyInit_dtw(void)", 0);
   if (__Pyx_check_binary_version() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_empty_tuple = PyTuple_New(0); if (unlikely(!__pyx_empty_tuple)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_empty_bytes = PyBytes_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_bytes)) __PYX_ERR(0, 1, __pyx_L1_error)
@@ -20483,7 +20480,7 @@ if (!__Pyx_RefNanny) {
   Py_INCREF(__pyx_m);
   #else
   #if PY_MAJOR_VERSION < 3
-  __pyx_m = Py_InitModule4("dtw_c", __pyx_methods, 0, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
+  __pyx_m = Py_InitModule4("dtw", __pyx_methods, 0, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
   #else
   __pyx_m = PyModule_Create(&__pyx_moduledef);
   #endif
@@ -20502,14 +20499,14 @@ if (!__Pyx_RefNanny) {
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
-  if (__pyx_module_is_main_poropyck__dtw_c__dtw_c) {
+  if (__pyx_module_is_main_dtw) {
     if (PyObject_SetAttrString(__pyx_m, "__name__", __pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "poropyck.dtw_c.dtw_c")) {
-      if (unlikely(PyDict_SetItemString(modules, "poropyck.dtw_c.dtw_c", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "dtw")) {
+      if (unlikely(PyDict_SetItemString(modules, "dtw", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   #endif
@@ -20530,7 +20527,7 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "poropyck/dtw_c/dtw_c.pyx":1
+  /* "dtw.pyx":1
  * import numpy as np             # <<<<<<<<<<<<<<
  * cimport numpy as np
  * cimport cython
@@ -20540,19 +20537,19 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":7
+  /* "dtw.pyx":7
  * 
  * 
  * def dtw(np.ndarray[np.float64_t, ndim=1, mode="c"] list1, np.ndarray[np.float64_t, ndim=1, mode="c"] list2):             # <<<<<<<<<<<<<<
  *     cdef double[:, ::1] costs = np.empty((len(list1)+1, len(list2)+1), dtype='float64')
  *     cdef char[:, ::1] path = np.empty((len(list1)+1, len(list2)+1), dtype='uint8')
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_8poropyck_5dtw_c_5dtw_c_1dtw, NULL, __pyx_n_s_poropyck_dtw_c_dtw_c); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_3dtw_1dtw, NULL, __pyx_n_s_dtw); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_dtw, __pyx_t_1) < 0) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "poropyck/dtw_c/dtw_c.pyx":1
+  /* "dtw.pyx":1
  * import numpy as np             # <<<<<<<<<<<<<<
  * cimport numpy as np
  * cimport cython
@@ -20722,11 +20719,11 @@ if (!__Pyx_RefNanny) {
   __Pyx_XDECREF(__pyx_t_1);
   if (__pyx_m) {
     if (__pyx_d) {
-      __Pyx_AddTraceback("init poropyck.dtw_c.dtw_c", 0, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init dtw", 0, __pyx_lineno, __pyx_filename);
     }
     Py_DECREF(__pyx_m); __pyx_m = 0;
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init poropyck.dtw_c.dtw_c");
+    PyErr_SetString(PyExc_ImportError, "init dtw");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();

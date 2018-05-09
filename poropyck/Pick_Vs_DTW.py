@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import hilbert
 import mcerp3 as mc
 from . import RockPhysics as rp
-from .dtw_c import dtw
+from .dtw import dtw
 
 
 COORDS = []

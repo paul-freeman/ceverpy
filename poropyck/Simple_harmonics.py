@@ -11,7 +11,7 @@ from scipy.signal import hilbert
 from scipy.signal import blackman
 import mcerp3 as mc
 from . import RockPhysics as rp
-from .dtw_c import dtw
+from .dtw import dtw
 
 COORDS = []
 #Subroutine to pick values from the active plot
