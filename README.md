@@ -26,7 +26,8 @@ Installing the package will provide you with the following scripts:
 
 ### Velocity picking (data on the bench)
 
- * *simple\_harmonics*: test the DTW picking with simple functions
+ * *simple\_harmonics\_1*: test the DTW picking with simple functions
+ * *simple\_harmonics\_2*: test the DTW picking with simple functions
  * *pick\_vp\_dtw*: do picking of P-waves using Dynamic Time Warping
  * *pick\_vs\_dtw*: do picking of S-waves using Dynamic Time Warping
  * *cross\_corr\_p*: calculate the time lag through cross-correlation for the

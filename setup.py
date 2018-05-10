@@ -25,8 +25,8 @@ setup(
         'mcerp3>=1.0.2'],
     entry_points={'console_scripts': [
         'install_poropyck_samples = poropyck.install_samples:install_samples',
-        'simple_harmonics = poropyck.Simple_harmonics:simple_harmonics',
-        'simple_harmonics2 = poropyck.Simple_harmonics2:simple_harmonics2',
+        'simple_harmonics_1 = poropyck.simple_harmonics:simple_harmonics_1',
+        'simple_harmonics_2 = poropyck.simple_harmonics:simple_harmonics_2',
         'pick_vp_dtw = poropyck.Pick_Vp_DTW:pick_vp_dtw',
         'pick_vs_dtw = poropyck.Pick_Vs_DTW:pick_vs_dtw',
         'cross_corr_p = poropyck.Cross_corr_P:cross_corr_p',
