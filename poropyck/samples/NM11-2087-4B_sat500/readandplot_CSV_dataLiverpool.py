@@ -6,7 +6,7 @@ import csv # this is the module that can read, write and manipulate csv files
 import numpy as np # the numerical capabilities of python
 import matplotlib.pyplot as plt # for plotting 
 import glob
-import RockPhysics as rp
+import rock_physics as rp
 #from obspy.core import Trace, Stats, Stream
 from scipy import signal
 

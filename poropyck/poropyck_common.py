@@ -5,8 +5,8 @@ import scipy as sp
 from scipy.signal import hilbert
 from scipy.signal import blackman
 import mcerp3 as mc
-from . import RockPhysics as rp
-from .dtw import dtw
+from . import rock_physics as rp
+from .dtw import dtw # pylint: disable=no-name-in-module
 
 
 COORDS = []

@@ -12,7 +12,7 @@ import numpy as np
 import scipy as sp
 from scipy.signal import hilbert
 import matplotlib.pyplot as plt
-from . import RockPhysics as rp
+from . import rock_physics as rp
 
 COORDS = []
 

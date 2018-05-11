@@ -5,18 +5,19 @@ Created on Thu Sep  7 12:40:08 2017
 @author: leo
 """
 #Import the Rock Physics subroutines
-from . import RockPhysics as rp #Loads all the necessary files
+from pkg_resources import resource_filename
+from . import rock_physics as rp #Loads all the necessary files
 import numpy as np
 import matplotlib.pyplot as plt
 import mcerp3 as mc
 
 def elastic_constants():
-
     #Font size for plots
     font= {'size' : 18}
     plt.rc('font',**font)
 
-    W=np.loadtxt('Samples_Depth.txt',dtype={'names': ('sample', 'depth'),'formats': ('S20', 'f4')})
+    filename = resource_filename('poropyck', 'Samples_Depth.txt')
+    W=np.loadtxt(filename,dtype={'names': ('sample', 'depth'),'formats': ('S20', 'f4')})
     plt.close('all')
     #value = input("Choose folder: Press 1 (dry rock), Press 2 (saturated rock) \n")
     #if value==1:
@@ -33,7 +34,7 @@ def elastic_constants():
     #dVpd=[]
     #Vps=[]
     #dVps=[]
-    suffix='Pyc' #Suffix for the files
+    suffix='Arch' #Suffix for the files
 
     Mud=[]
     dMud=[]
@@ -52,10 +53,11 @@ def elastic_constants():
     Ps=[]
     dPs=[]
 
+
     for i in range(0,len(W)):
         well=W[i][0].decode('UTF-8') #Well
         #Read the density files
-        A=np.loadtxt('./'+well+'/Dry_density2.out') #('./'+well+'/Density_Pycnometer.out')
+        A=np.loadtxt('./'+well+'/Dry_density2.out')
         B=np.loadtxt('./'+well+'/Sat_density2.out')
         rhod=A[0]
         drhod=A[1]
@@ -89,7 +91,7 @@ def elastic_constants():
         #Saturated
         Vs=np.loadtxt('./'+well+'/'+well+'s/Velocities_P_sat_both.out',skiprows=1)[0]
         dVs=np.loadtxt('./'+well+'/'+well+'s/Velocities_P_sat_both.out',skiprows=1)[1]
-        Vels=mc.N(Vs,dVs) #Velocity of sat rock
+        Vels=mc.N(Vs,dVs) #Velocity of dry rock
         
         print((''+well+' (Vpd): ', Veld.mean,Veld.std)) 
         print((''+well+' (Vps): ', Vels.mean,Vels.std))
@@ -105,29 +107,30 @@ def elastic_constants():
         #Create distributions for Mud and Mus
         MUD=mc.N(mud,dmud)
         MUS=mc.N(mus,dmus)
-        print(('Shear '+well+': ',MUD.mean,MUS.mean))
+        print((MUD.mean,MUS.std))
         
         #Bulk modulus
         KD=1e-6*RHOD*Veld**2-(4.0/3)*MUD
         KS=1e-6*RHOS*Vels**2-(4.0/3)*MUS
-        print(('Bulk '+well+': ',KD.mean,KS.mean))
+        print((KD.mean,KS.std))
         np.savetxt('./'+well+'/'+well+'d/Bulk_dry_'+suffix+'.out',[KD.mean,KD.std],header='Kd (GPa) , dKd (GPa)')    
         np.savetxt('./'+well+'/'+well+'s/Bulk_sat_'+suffix+'.out',[KS.mean,KS.std],header='Ks (GPa) , dKs (GPa)')
         
         #Poisson's Ratio  
         PD=(3*KD-2*MUD)/(2*(3*KD+MUD))
         PS=(3*KS-2*MUS)/(2*(3*KS+MUS))
-        print(('Poisson '+well+': ',PD.mean,PS.mean)) 
+        print((PD.mean,PS.std)) 
         np.savetxt('./'+well+'/'+well+'d/Poisson_dry_'+suffix+'.out',[PD.mean,PD.std],header='Pd  , dPd ')    
         np.savetxt('./'+well+'/'+well+'s/Poisson_sat_'+suffix+'.out',[PS.mean,PS.std],header='Ps  , dPs ')
         
         #Young Modulus
         ED=9*KD*MUD/(3*KD+MUD)
         ES=9*KS*MUS/(3*KS+MUS)
-        print(('Young '+well+': ',ED.mean,ES.mean))
+        print((ED.mean,ES.std))
         np.savetxt('./'+well+'/'+well+'d/Young_dry_'+suffix+'.out',[ED.mean,ED.std],header='Ed (GPa) , dEd (GPa)')    
         np.savetxt('./'+well+'/'+well+'s/Young_sat_'+suffix+'.out',[ES.mean,ES.std],header='Es (GPa) , dEs (GPa)')
         
+        #Figures
         plt.figure('K (sat.)')
         KS.plot(label='$K$ (sat.)',lw=2,color='b')
         KS.plot(hist=True,label='$K$ (sat.) (MC)',color='g')
@@ -178,27 +181,32 @@ def elastic_constants():
         plt.savefig('./'+well+'/'+well+'d/Young_dry_'+suffix+'.pdf',bbox_inches='tight')
         plt.close()
         
-        #Save values,
         #Save values
-        Mud=np.append(Mud,np.loadtxt('./'+well+'/'+well+'d''/Shear_dry_'+suffix+'.out')[0])
-        dMud=np.append(dMud,np.loadtxt('./'+well+'/'+well+'d''/Shear_dry_'+suffix+'.out')[1])
-        Mus=np.append(Mus,np.loadtxt('./'+well+'/'+well+'s''/Shear_sat_'+suffix+'.out')[0])
-        dMus=np.append(dMus,np.loadtxt('./'+well+'/'+well+'s''/Shear_sat_'+suffix+'.out')[1])
-        Kd=np.append(Kd,np.loadtxt('./'+well+'/'+well+'d''/Bulk_dry_'+suffix+'.out')[0])
-        dKd=np.append(dKd,np.loadtxt('./'+well+'/'+well+'d''/Bulk_dry_'+suffix+'.out')[1])
-        Ks=np.append(Ks,np.loadtxt('./'+well+'/'+well+'s''/Bulk_sat_'+suffix+'.out')[0])
-        dKs=np.append(dKs,np.loadtxt('./'+well+'/'+well+'s''/Bulk_sat_'+suffix+'.out')[1])
-        Ed=np.append(Ed,np.loadtxt('./'+well+'/'+well+'d''/Young_dry_'+suffix+'.out')[0])
-        dEd=np.append(dEd,np.loadtxt('./'+well+'/'+well+'d''/Young_dry_'+suffix+'.out')[1])
-        Es=np.append(Es,np.loadtxt('./'+well+'/'+well+'s''/Young_sat_'+suffix+'.out')[0])
-        dEs=np.append(dEs,np.loadtxt('./'+well+'/'+well+'s''/Young_sat_'+suffix+'.out')[1])
-        Pd=np.append(Pd,np.loadtxt('./'+well+'/'+well+'d''/Poisson_dry_'+suffix+'.out')[0])
-        dPd=np.append(dPd,np.loadtxt('./'+well+'/'+well+'d''/Poisson_dry_'+suffix+'.out')[1])
-        Ps=np.append(Ps,np.loadtxt('./'+well+'/'+well+'s''/Poisson_sat_'+suffix+'.out')[0])
-        dPs=np.append(dPs,np.loadtxt('./'+well+'/'+well+'s''/Poisson_sat_'+suffix+'.out')[1])
-        
+        Mud=np.append(Mud,np.loadtxt('./'+well+'/'+well+'d''/Shear_dry_Arch.out')[0])
+        dMud=np.append(dMud,np.loadtxt('./'+well+'/'+well+'d''/Shear_dry_Arch.out')[1])
+        Mus=np.append(Mus,np.loadtxt('./'+well+'/'+well+'s''/Shear_sat_Arch.out')[0])
+        dMus=np.append(dMus,np.loadtxt('./'+well+'/'+well+'s''/Shear_sat_Arch.out')[1])
+        Kd=np.append(Kd,np.loadtxt('./'+well+'/'+well+'d''/Bulk_dry_Arch.out')[0])
+        dKd=np.append(dKd,np.loadtxt('./'+well+'/'+well+'d''/Bulk_dry_Arch.out')[1])
+        Ks=np.append(Ks,np.loadtxt('./'+well+'/'+well+'s''/Bulk_sat_Arch.out')[0])
+        dKs=np.append(dKs,np.loadtxt('./'+well+'/'+well+'s''/Bulk_sat_Arch.out')[1])
+        Ed=np.append(Ed,np.loadtxt('./'+well+'/'+well+'d''/Young_dry_Arch.out')[0])
+        dEd=np.append(dEd,np.loadtxt('./'+well+'/'+well+'d''/Young_dry_Arch.out')[1])
+        Es=np.append(Es,np.loadtxt('./'+well+'/'+well+'s''/Young_sat_Arch.out')[0])
+        dEs=np.append(dEs,np.loadtxt('./'+well+'/'+well+'s''/Young_sat_Arch.out')[1])
+        Pd=np.append(Pd,np.loadtxt('./'+well+'/'+well+'d''/Poisson_dry_Arch.out')[0])
+        dPd=np.append(dPd,np.loadtxt('./'+well+'/'+well+'d''/Poisson_dry_Arch.out')[1])
+        Ps=np.append(Ps,np.loadtxt('./'+well+'/'+well+'s''/Poisson_sat_Arch.out')[0])
+        dPs=np.append(dPs,np.loadtxt('./'+well+'/'+well+'s''/Poisson_sat_Arch.out')[1])
+
+    ##Print statement
+    #print('%4.2f +/- %4.2f ' % (Vpd[0],dVpd[0]))
+    #s='%4.2f +/- %4.2f ' % (Vpd[0],dVpd[0]) #Print the same into a string
     #
-    filename='Table_Constants_Pyc.txt'
+
+        
+        
+    filename='Table_Constants.txt'
     F=open(filename,'w')
     F.write('Well, $\mu$ (dry), $\mu$ (sat), $K$ (dry), $K$ (sat.), $E$ (dry), $E$ (sat.) , $\v$ (dry), $\v$ (sat.) \n')
     S=[]
@@ -215,4 +223,15 @@ def elastic_constants():
         F.write('%s, %s, %s, %s, %s, %s, %s, %s, %s \n'% (name, s1 ,  s2,  s3,  s4,  s5,  s6, s7, s8))
     F.close()
 
-     
+    size=40    
+    fig = plt.figure('Poisson (dry) vs. Poisson (sat) ')
+    ax = fig.add_subplot(111)   
+    for i in range(0,len(W)):
+        ax.scatter(Pd[i],Ps[i],s=size,c='b')
+        #ax.text(Pd[i],Ps[i], well, fontsize=font) 
+        #ax.text(Vpsc[i],Vssc[i], A[i][0], fontsize=font) 
+    ax.errorbar(Pd, Ps, yerr=[2*dPs, 2*dPs], xerr=[2*dPd, 2*dPd], fmt='o',color='b')
+    plt.xlabel('Poisson (dry)'),plt.ylabel('Poisson (sat.)')        
+    plt.axis('tight')
+    #plt.colorbar()
+    plt.grid('on')  

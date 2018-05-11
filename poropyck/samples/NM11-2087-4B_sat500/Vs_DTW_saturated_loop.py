@@ -26,7 +26,7 @@ rpy2.robjects.numpy2ri.activate()
 from scipy.signal import hilbert
 from matplotlib.ticker import NullFormatter, FormatStrFormatter
 import mcerp as mc
-import RockPhysics as rp
+import rock_physics as rp
 import glob
 
 # Set up our R namespaces

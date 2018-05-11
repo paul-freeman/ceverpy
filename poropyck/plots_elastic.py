@@ -32,7 +32,7 @@ def fourier_phase(dt,Sd,Ss):
 
     
 #Import the Rock Physics subroutines
-from . import RockPhysics as rp #Loads all the necessary files
+from . import rock_physics as rp #Loads all the necessary files
 import numpy as np
 import matplotlib.pyplot as plt
 import mcerp3 as mc

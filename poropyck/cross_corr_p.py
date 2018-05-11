@@ -10,9 +10,9 @@ Created on Fri Mar 10 15:54:27 2017
 """
 import numpy as np
 import scipy as sp
-import matplotlib.pyplot as plt
 from scipy.signal import hilbert
-from . import RockPhysics as rp
+import matplotlib.pyplot as plt
+from . import rock_physics as rp
 
 
 COORDS=[]

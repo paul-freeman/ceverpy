@@ -8,8 +8,8 @@ import glob
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import hilbert
-from . import RockPhysics as rp
-from .dtw import dtw
+from . import rock_physics as rp
+from .dtw import dtw # pylint: disable=no-name-in-module
 
 
 COORDS = []
@@ -24,9 +24,8 @@ def onpick(event):
     COORDS.append((xdata[ind], ydata[ind]))
     return COORDS
     
-def vp_dtw_saturated_loop():
+def vs_dtw_saturated_loop():
     global COORDS
-
     ##Choose the folder with waveforms
     #well=input("Type name of sample (e.g. 'NM11_2087-4B_sat3000'): \n")
 
@@ -46,12 +45,12 @@ def vp_dtw_saturated_loop():
         cycles=np.append(cycles,cycle)
 
     #CHOOSE THE PHASE TO PICK
-    indices=np.where((phases=='PP')& (cycles=='d2')& (states=='sat500'))[0]
+    indices=np.where((phases=='S1')& (cycles=='d2')& (states=='sat500'))[0]
     indices_sorted=[x for _,x in sorted(zip(Pc[indices],indices))] #Sort according to pressures   
 
     #PICK THE S-TIME FOR THE HIGHEST PRESSURE EXPERIMENT TO BACK-TRACK IT TO LOWER ONES
     timeSd,Sd=rp.load_csv(files[indices[0]],0)
-    print('Pick the P-time for this pressure')
+    print('Pick the S-time for this pressure')
     #Choose the two extremes to compare
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -122,7 +121,7 @@ def vp_dtw_saturated_loop():
         query=Ss[i_s:f_s]/np.max(np.abs(Ss[i_s:f_s]))
         templateh=np.abs(hilbert(Sd[i_d:f_d]/np.max(np.abs(Sd[i_d:f_d]))))
         queryh=np.abs(hilbert(Ss[i_s:f_s]/np.max(np.abs(Ss[i_s:f_s]))))
-       
+
         # Calculate the alignment vector and corresponding distance (DTW)
         # Delete costs matrix because it can be quite large - and we don't use it.
         dist, indices1, indices2, costs = dtw(query, template)
@@ -134,7 +133,7 @@ def vp_dtw_saturated_loop():
         print('Distance of the DTW algorithm (waveform): {:.3f}'.format(dist))
         print('Distance of the DTW algorithm (envelope): {:.3f}'.format(disth))
 
-        #Indices of alignment
+        # Indices of alignment
         I1 = indices1
         I2 = indices2
         I1h = indices1h
@@ -144,8 +143,8 @@ def vp_dtw_saturated_loop():
         #Plots
         #Plot #1
         plt.figure('Points of match')
-        plt.plot(idxt,template,label='Pd',c='b')
-        plt.plot(idxq,query,label='Ps',c='g')
+        plt.plot(idxt,template,label='Sd',c='b')
+        plt.plot(idxq,query,label='Ss',c='g')
         plt.axis('tight')
         plt.legend()
         plt.xlabel('time (microsecs)')
@@ -263,11 +262,11 @@ def vp_dtw_saturated_loop():
         M=np.array([np.mean(tS),np.std(tS)])
         np.savetxt(''+phases[indices[k+1]]+'_time_std_'+states[indices[k+1]]+'_'+np.str(np.int(Pc[indices[k+1]]))+'.out',M) #save the picked times    
         #Save the histograms
-        rp.histogram(tD,'P-arrival ('+np.str(np.int(Pc[indices[k]]))+')')
+        rp.histogram(tD,'S-arrival ('+np.str(np.int(Pc[indices[k]]))+')')
         plt.xlabel('Time (microsecs)')
         plt.savefig(''+phases[indices[k]]+'_times_hist_'+states[indices[k]]+'_'+np.str(np.int(Pc[indices[k]]))+'.pdf',bbox_inches='tight')
         plt.show(block=True)
-        rp.histogram(tS,'P-arrival ('+np.str(np.int(Pc[indices[k+1]]))+')')
+        rp.histogram(tS,'S-arrival ('+np.str(np.int(Pc[indices[k+1]]))+')')
         plt.xlabel('Time (microsecs)')
         plt.savefig(''+phases[indices[k+1]]+'_times_hist_'+states[indices[k+1]]+'_'+np.str(np.int(Pc[indices[k+1]]))+'.pdf',bbox_inches='tight')
         plt.show(block=True)
@@ -276,9 +275,8 @@ def vp_dtw_saturated_loop():
     font = {'size'   : 24}
     plt.rc('font',**font)
     Pp=500 #psi
-
         
-    fig = plt.figure('tp vs. Pressure')
+    fig = plt.figure('ts vs. Pressure')
     ax = fig.add_subplot(111)
     dP=50*np.ones(len(indices))  
     Vs=[]
@@ -290,9 +288,9 @@ def vp_dtw_saturated_loop():
         ax.scatter(Pc[indices[i]]-Pp,mean)
     ax.errorbar(Pc[indices]-Pp, Vs, yerr=[2*dVs, 2*dVs], xerr=[2*dP, 2*dP], fmt='o')
     ax.plot(Pc[indices]-Pp, Vs,'b')
-    plt.xlabel('Differential pressure (psi)'),plt.ylabel('P-time ($\mu s$)')
+    plt.xlabel('Differential pressure (psi)'),plt.ylabel('S-time ($\mu s$)')
     plt.grid('on')
-    plt.savefig('tp_'+phases[indices[i]]+'_picks_'+np.str(Pp)+'.pdf')
+    plt.savefig('ts_'+phases[indices[i]]+'_picks_'+np.str(Pp)+'.pdf')
     plt.show(block=True)
 
     well='NM11_2087_4B'
@@ -301,45 +299,26 @@ def vp_dtw_saturated_loop():
     L,StdL=rp.Length_sample(Lengths)
 
 
-    VP=[]
-    dVP=[]
+    VS=[]
+    dVS=[]
     for k in range(0,len(indices)):
         #Load the picked times file
         #Load the last picks and plot the picking band
         tDm,dtD=np.loadtxt(''+phases[indices[k]]+'_time_std_'+states[indices[k]]+'_'+np.str(np.int(Pc[indices[k]]))+'.out')    
         #CALCULATE THE VELOCITIES FROM THE TIMES PICKED FOR THE DRY SAMPLE
-        Vd,dVd,Vd_down,Vdmc,Vd_up=rp.Velocity_S(L,tDm-3.5,StdL,dtD) #Velocity S is more general than Velocity_P
-        np.savetxt(''+phases[indices[k]]+'_VP_std_'+states[indices[k]]+'_'+np.str(np.int(Pc[indices[k]]))+'.out', [Vd,dVd,Vd_down,Vdmc.mean,Vd_up], fmt='%1.2f',delimiter=',',header='Vp (dry), StdVp (dry), V_0025, V_mean, V_0975')
-        VP=np.append(VP,Vd)
-        dVP=np.append(dVP,dVd)
+        Vd,dVd,Vd_down,Vdmc,Vd_up=rp.Velocity_S(L,tDm-5.99,StdL,dtD) #Velocity S is more general than Velocity_P
+        np.savetxt(''+phases[indices[k]]+'_VS_std_'+states[indices[k]]+'_'+np.str(np.int(Pc[indices[k]]))+'.out', [Vd,dVd,Vd_down,Vdmc.mean,Vd_up], fmt='%1.2f',delimiter=',',header='Vp (dry), StdVp (dry), V_0025, V_mean, V_0975')
+        VS=np.append(VS,Vd)
+        dVS=np.append(dVS,dVd)
 
-    fig = plt.figure('Vp vs. Pressure')
+    fig = plt.figure('Vs vs. Pressure')
     ax = fig.add_subplot(111)
-    ax.errorbar(Pc[indices]-Pp, VP, yerr=[2*dVP, 2*dVP], xerr=[2*dP, 2*dP], fmt='o')
-    ax.plot(Pc[indices]-Pp, VP,'b')
-    plt.xlabel('Differential pressure (psi)'),plt.ylabel('$V_P$ (m/s)')
+    ax.errorbar(Pc[indices]-Pp, VS, yerr=[2*dVS, 2*dVS], xerr=[2*dP, 2*dP], fmt='o')
+    ax.plot(Pc[indices]-Pp, VS,'b')
+    plt.xlabel('Differential pressure (psi)'),plt.ylabel('$V_S$ (m/s)')
     plt.grid('on')
-    plt.savefig('Vp_'+phases[indices[i]]+'_picks_'+np.str(Pp)+'.pdf')
+    plt.savefig('Vs_'+phases[indices[i]]+'_picks_'+np.str(Pp)+'.pdf')
     plt.show(block=True)
-
-    #    #Save the velocities and intervals
-    #    #np.savetxt('./'+well+'/'+well+'d/Velocities_P_dry_'+suffix+'.out', [Vd,dVd,Vd_down,Vdmc.mean,Vd_up], fmt='%1.2f',delimiter=',',header='Vp (dry), StdVp (dry), V_0025, V_mean, V_0975')
-    #    #Plot the velocities distributions
-    #    plt.figure('Vp (dry)')
-    #    Veld=mc.N(Vd,dVd)
-    #    Veld.plot(label='Vp (dry)',lw=2,color='b')
-    #    Vdmc.plot(hist=True,label='Vp (dry) (MC)',color='g')
-    #    plt.legend()
-    #    plt.xlabel('Velocity (m/s)')
-    #    #Save the figure
-    #    manager= plt.get_current_fig_manager()
-    #    manager.window.showMaximized()
-    #    plt.show()
-    #    #plt.savefig('./'+well+'/'+well+'d/Vp_hist_dry_'+suffix+'.pdf',bbox_inches='tight')
-    #    plt.show(block=True)#plt.show(block=True)
-
-
-
 
     ##EDITS
     ##Plot #3: A Summary plot with the alignment function linking the two waveforms

@@ -7,8 +7,8 @@ Created on Mon Feb 13 13:47:25 2017
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sc
-import mcerp3 as mc
-import mcerp3.umath as umath 
+import mcerp as mc
+import mcerp.umath as umath 
 from scipy.stats import norm as normal
 #import visa
 import glob
@@ -570,7 +570,7 @@ def plot_onthego(Figure,pos,wc,c,s):
     import numpy as np # the numerical capabilities of python
     import matplotlib.pyplot as plt # for plotting 
     import glob
-    from . import RockPhysics as rp
+    import rock_physics as rp
     #from obspy.core import Trace, Stats, Stream
     from scipy import signal
     
