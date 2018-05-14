@@ -32,95 +32,109 @@ def onpick(event):
     return COORDS
 
 
-def simple_harmonics(a2_value, cross_correlation, use_manager, print_time_lag, labels):
+# "Magic numbers"
+X_MIN = 0
+X_MAX = 40
+X_DELTA = 0.01
+DELTA = 0.0
+
+A1_VALUES = [1.0, 1.5, 2.0, 3.0, 4.0, 2.0, 0.9]
+F1_VALUES = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
+F2_VALUES = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
+
+S_START = 500
+S_END = 1500
+
+T_START = 0
+T_END = 1000
+T_OFFSET = 10.0
+T_OFFSET_2 = 2.0
+
+def simple_harmonics(a2_values, cross_correlation, use_manager, print_time_lag, labels):
     """Define two functions to compared composed of simple harmonics"""
     global COORDS
+    a1_values = A1_VALUES
+    f1_values = F1_VALUES
+    # a2_values = a2_values # these are passed into the function
+    f2_values = F2_VALUES
+    t_value = np.arange(X_MIN, X_MAX, X_DELTA)
+    s1_values = np.zeros(len(t_value))
+    s2_values = np.zeros(len(t_value))
+    for i, values in enumerate(zip(a1_values, a2_values, f1_values, f2_values)):
+        a1_value, a2_value, f1_value, f2_value = values
+        s1_values += (
+            a1_value * np.sin(2 * np.pi * f1_value * t_value)
+            + a1_value * np.cos(2 * np.pi * f1_value * t_value)
+            )
+        s2_values += (
+            a2_value * np.sin(2 * np.pi * f2_value * (t_value + DELTA))
+            + a2_value * np.cos(2 * np.pi * f2_value * (t_value + DELTA))
+            )
+    s1_final = s1_values[S_START:S_END] * blackman(len(s1_values[S_START:S_END]))
+    s2_final = s2_values[S_START:S_END] * blackman(len(s2_values[S_START:S_END]))
 
-    F1 = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
-    A1 = [1.0, 1.5, 2.0, 3.0, 4.0, 2.0, 0.9]
-    F2 = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
-    A2 = a2_value
+    well = input("Type name of sample (e.g. 'Dummy'): \n")
 
-    t = np.arange(0, 40, 0.01)
-    delta = 0.0
-    #Signal 1
-    s1 = np.zeros(len(t))
-    s2 = np.zeros(len(t))
-    for i in range(0, len(F1)):
-        s1 = s1+A1[i]*np.sin(2*np.pi*F1[i]*t)+A1[i]*np.cos(2*np.pi*F1[i]*t)
-        s2 = s2+A2[i]*np.sin(2*np.pi*F2[i]*(t+delta))+A2[i]*np.cos(2*np.pi*F2[i]*(t+delta))
-
-    #plot the signals
-    S1 = s1[500:1500]*blackman(len(s1[500:1500]))
-    S2 = s2[500:1500]*blackman(len(s2[500:1500]))
-    #plt.plot(t[0:1000],S1)
-    #plt.plot(t[0:1000]+2,S2)
-    #plt.grid('on')
-
-    #Choose the sample's folder
-    well=input("Type name of sample (e.g. 'Dummy'): \n")
-
-    #1) READ THE WAVEFORMS
-    #1.1) READ THE DRY SAMPLE WAVEFORM FIRST
-    #timeSd,T,Sd=rp.plot_csv('./'+well+'/'+well+'d/tek0001ALL.csv',0)
-    timeSd=t[0:1000]+10
-    Sd=S1
+    time_sd = t_value[T_START:T_END] + T_OFFSET
+    sd_values = s1_final
 
     print('Choose the beginning and end that you want to compare')
     #Choose the two extremes to compare
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.set_title('click on points')
-    COORDS=[]
-    ax.plot(timeSd,Sd,'-',picker=5),plt.xlabel('Time ($\mu$s)')
+    COORDS = []
+    ax.plot(time_sd, sd_values, '-', picker=5)
+    plt.xlabel(r'Time ($\mu$s)')
     plt.grid(color='0.5')
-    cid = fig.canvas.mpl_connect('pick_event', onpick)
+    _ = fig.canvas.mpl_connect('pick_event', onpick)
     #Work around for plt.show(block=True) in IPython using Spyder
     plt.show(block=True)#plt.show(block=True)
     #Pick the times
-    t_id=np.min(COORDS[0][0])
-    t_fd=np.min(COORDS[1][0])
+    t_id = np.min(COORDS[0][0])
+    t_fd = np.min(COORDS[1][0])
 
     #Indices to crop the dry sample time vector
-    i_d=np.min(np.where(timeSd>=t_id))
-    f_d=np.min(np.where(timeSd>=t_fd))
+    i_d = np.min(np.where(time_sd >= t_id))
+    f_d = np.min(np.where(time_sd >= t_fd))
 
     #1.2) READ THE SATURATED SAMPLE WAVEFORM SECOND
-    #timeSs,T,Ss=rp.plot_csv('./'+well+'/'+well+'s/tek0001ALL.csv',0)
-    timeSs=t[0:1000]+10.+2.0
-    Ss=S2
+    #time_ss,T,Ss=rp.plot_csv('./'+well+'/'+well+'s/tek0001ALL.csv',0)
+    time_ss = t_value[T_START:T_END] + T_OFFSET + T_OFFSET_2
+    Ss = s2_final
 
 
     print('Choose the beginning and end that you want to compare')
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.set_title('click on points')
-    COORDS=[]
-    ax.plot(timeSs,Ss,'-',picker=5),plt.xlabel('Time ($\mu$s)')
+    COORDS = []
+    ax.plot(time_ss, Ss, '-', picker=5)
+    plt.xlabel(r'Time ($\mu$s)')
     plt.grid(color='0.5')
     fig.canvas.mpl_connect('pick_event', onpick)
-    plt.show(block=True)#plt.show(block=True)
+    plt.show(block=True)
 
-    t_is=np.min(COORDS[0][0])
-    t_fs=np.min(COORDS[1][0])
+    t_is = np.min(COORDS[0][0])
+    t_fs = np.min(COORDS[1][0])
 
     #Indices to crop for the saturated sample time vector
-    i_s=np.min(np.where(timeSs>=t_is))
-    f_s=np.min(np.where(timeSs>=t_fs))
+    i_s = np.min(np.where(time_ss >= t_is))
+    f_s = np.min(np.where(time_ss >= t_fs))
 
     #2) DO THE COMPARISON USING THE DTW ALGORITHM
     #THE DYNAMIC TIME WARPING ALGORITHM BEGINS HERE!!!!
-    idxt=timeSd[i_d:f_d] #Indices of the template function (dry sample waveform)
-    idxq=timeSs[i_s:f_s] #Indices of the query function (saturated sample waveform)
+    idxt = time_sd[i_d:f_d] #Indices of the template function (dry sample waveform)
+    idxq = time_ss[i_s:f_s] #Indices of the query function (saturated sample waveform)
 
     #2.1) CHOOSE INFORMATION TO COMPARE (WAVEFORMS OR ENVELOPES)
-    template=Sd[i_d:f_d]/np.max(np.abs(Sd[i_d:f_d]))
-    query=Ss[i_s:f_s]/np.max(np.abs(Ss[i_s:f_s]))
-    templatea=(np.angle(hilbert(Sd[i_d:f_d]/np.max(np.abs(Sd[i_d:f_d])))))/np.pi
-    querya=(np.angle(hilbert(Ss[i_s:f_s]/np.max(np.abs(Ss[i_s:f_s])))))/np.pi
-    templateh=np.abs(hilbert(Sd[i_d:f_d]/np.max(np.abs(Sd[i_d:f_d]))))
-    queryh=np.abs(hilbert(Ss[i_s:f_s]/np.max(np.abs(Ss[i_s:f_s]))))
-    suffix='both' #Suffix for the files
+    template = sd_values[i_d:f_d]/np.max(np.abs(sd_values[i_d:f_d]))
+    query = Ss[i_s:f_s]/np.max(np.abs(Ss[i_s:f_s]))
+    templatea = (np.angle(hilbert(sd_values[i_d:f_d]/np.max(np.abs(sd_values[i_d:f_d])))))/np.pi
+    querya = (np.angle(hilbert(Ss[i_s:f_s]/np.max(np.abs(Ss[i_s:f_s])))))/np.pi
+    templateh = np.abs(hilbert(sd_values[i_d:f_d]/np.max(np.abs(sd_values[i_d:f_d]))))
+    queryh = np.abs(hilbert(Ss[i_s:f_s]/np.max(np.abs(Ss[i_s:f_s]))))
+    suffix = 'both' #Suffix for the files
 
     # Calculate the alignment vector and corresponding distance (DTW)
     # Delete costs matrix because it can be quite large - and we don't use it.
@@ -150,69 +164,87 @@ def simple_harmonics(a2_value, cross_correlation, use_manager, print_time_lag, l
     #Plots
     #Plot #1: points of match between the waveforms
     plt.figure('Points of match')
-    plt.plot(idxt,template,label='Pd',c='b')
-    plt.plot(idxq,query,label='Ps',c='g')
+    plt.plot(idxt, template, label='Pd', c='b')
+    plt.plot(idxq, query, label='Ps', c='g')
     plt.axis('tight')
     plt.legend()
-    plt.xlabel('time ($\mu$s)')
+    plt.xlabel(r'time ($\mu$s)')
     #Plot the matching points
-    for i in np.arange(0,len(I1)-1,20):
-        plt.plot([idxt[np.int(I2[i]-1)],idxq[np.int(I1[i]-1)]],[template[np.int(I2[i]-1)],query[np.int(I1[i]-1)]],'r-',lw=0.5)
-
+    for i in np.arange(0, len(I1)-1, 20):
+        plt.plot(
+            [idxt[np.int(I2[i]-1)], idxq[np.int(I1[i]-1)]],
+            [template[np.int(I2[i]-1)], query[np.int(I1[i]-1)]],
+            'r-',
+            lw=0.5
+            )
     #Save the figure
     if use_manager:
         manager = plt.get_current_fig_manager()
         manager.window.showMaximized()
     plt.show()
-    plt.savefig('./'+well+'/'+well+'d/DTW_Match_Pwaves_'+suffix+'.pdf',bbox_inches='tight')
-    plt.savefig('./'+well+'/'+well+'s/DTW_Match_Pwaves_'+suffix+'.pdf',bbox_inches='tight')
+    plt.savefig(
+        './{0}/{0}d/DTW_Match_Pwaves_{1}.pdf'.format(well, suffix),
+        bbox_inches='tight'
+        )
+    plt.savefig(
+        './{0}/{0}s/DTW_Match_Pwaves_{1}.pdf'.format(well, suffix),
+        bbox_inches='tight'
+        )
     plt.show(block=True)#plt.show(block=True)
 
     #Plot #2 (mostly unnecessary): Compare a function over the other
     #plt.figure('One over the other')
-    qo=[]
-    qoa=[]
-    qoh=[]
-    to=[]
-    toa=[]
-    toh=[]
-    idxto=[]
-    idxtoa=[]
-    idxtoh=[]
-    idxqo=[]
-    idxqoa=[]
-    idxqoh=[]
-    for i in range(0,len(I1)):
-        idxto=np.append(idxto,idxt[np.int(I2[i])-1]) #time vector arranged by index
-        idxqo=np.append(idxqo,idxq[np.int(I1[i])-1]) #time vector arranged by index
-        qo=np.append(qo,query[np.int(I1[i])-1]) #Query function sampled by the index
-        to=np.append(to,template[np.int(I2[i])-1]) #Template function sampled by the index
-    for i in range(0,len(I1h)):
-        idxtoh=np.append(idxtoh,idxt[np.int(I2h[i])-1]) #time vector arranged by index
-        idxqoh=np.append(idxqoh,idxq[np.int(I1h[i])-1]) #time vector arranged by index
-        qoh=np.append(qoh,queryh[np.int(I1h[i])-1]) #Query function sampled by the index
-        toh=np.append(toh,templateh[np.int(I2h[i])-1]) #Template function sampled by the index
-    for i in range(0,len(I1a)):
-        idxtoa=np.append(idxtoa,idxt[np.int(I2a[i])-1]) #time vector arranged by index
-        idxqoa=np.append(idxqoa,idxq[np.int(I1a[i])-1]) #time vector arranged by index
-        qoa=np.append(qoa,querya[np.int(I1a[i])-1]) #Query function sampled by the index
-        toa=np.append(toa,templatea[np.int(I2a[i])-1]) #Template function sampled by the index
-    #plt.figure('Superposition')
-    #plt.plot(qo)
-    #plt.plot(to)
-
+    qo_ = []
+    qoa = []
+    qoh = []
+    to_ = []
+    toa = []
+    toh = []
+    idxto = []
+    idxtoa = []
+    idxtoh = []
+    idxqo = []
+    idxqoa = []
+    idxqoh = []
+    for i, _ in enumerate(I1):
+        # time vector arranged by index
+        idxto = np.append(idxto, idxt[np.int(I2[i])-1])
+        # time vector arranged by index
+        idxqo = np.append(idxqo, idxq[np.int(I1[i])-1])
+        # Query function sampled by the index
+        qo_ = np.append(qo_, query[np.int(I1[i])-1])
+        # Template function sampled by the index
+        to_ = np.append(to_, template[np.int(I2[i])-1])
+    for i, _ in enumerate(I1h):
+        # time vector arranged by index
+        idxtoh = np.append(idxtoh, idxt[np.int(I2h[i])-1])
+        # time vector arranged by index
+        idxqoh = np.append(idxqoh, idxq[np.int(I1h[i])-1])
+        # Query function sampled by the index
+        qoh = np.append(qoh, queryh[np.int(I1h[i])-1])
+        # Template function sampled by the index
+        toh = np.append(toh, templateh[np.int(I2h[i])-1])
+    for i, _ in enumerate(I1a):
+        # time vector arranged by index
+        idxtoa = np.append(idxtoa, idxt[np.int(I2a[i])-1])
+        # time vector arranged by index
+        idxqoa = np.append(idxqoa, idxq[np.int(I1a[i])-1])
+        # Query function sampled by the index
+        qoa = np.append(qoa, querya[np.int(I1a[i])-1])
+        # Template function sampled by the index
+        toa = np.append(toa, templatea[np.int(I2a[i])-1])
     #Plot #3: A Summary plot with the alignment function linking the two waveforms
     # definitions for the axes
     left, width = 0.12, 0.60
     bottom, height = 0.08, 0.60
-    bottom_h =  0.16 + width
+    bottom_h = 0.16 + width
     left_h = left + 0.27
     rect_plot = [left_h, bottom, width, height]
     rect_x = [left_h, bottom_h, width, 0.2]
     rect_y = [left, bottom, 0.2, height]
 
     # start with a rectangular Figure
-    fig=plt.figure('Summary', figsize=(10, 10))
+    fig = plt.figure('Summary', figsize=(10, 10))
 
     #axplot = fig.add_subplot(111)
     axplot = plt.axes(rect_plot)
@@ -220,40 +252,39 @@ def simple_harmonics(a2_value, cross_correlation, use_manager, print_time_lag, l
     axy = plt.axes(rect_y)
 
     # Plot the matrix
-    axplot.plot(idxqo,idxto,'k',picker=5,lw=2)
-    axplot.plot(idxqoa,idxtoa,'m',picker=5,lw=2)
-    axplot.plot(idxqoh,idxtoh,'--',color='m',picker=5,lw=2)
-    axplot.axis([t_id,t_fd,t_id,t_fd]) #Give same time scale as template
+    axplot.plot(idxqo, idxto, 'k', picker=5, lw=2)
+    axplot.plot(idxqoa, idxtoa, 'm', picker=5, lw=2)
+    axplot.plot(idxqoh, idxtoh, '--', color='m', picker=5, lw=2)
+    # Give same time scale as template
+    axplot.axis([t_id, t_fd, t_id, t_fd])
     axplot.grid(color='0.5')
 
-
-    #Indices in P correspond to locations where S-times saturated are larger than S-times dry
-    P=np.where(idxqo>=idxto) #Find the locations where time of S sat. is larger than time of S dry
-    Ph=np.where(idxqoh>=idxtoh)
-    #axplot.scatter(idxqo[P],idxto[P],c='r',s=10)
-    #axplot.scatter(idxqoh[Ph],idxtoh[Ph],c='r',s=10)
-    #Define and plot the 1:1 line of match
-    x1=np.linspace(0,np.max([timeSd,timeSs]),10)
-    y1=x1
-    axplot.plot(x1,y1,'g',lw=2) #plot the 1:1 line of match
+    # Indices in P correspond to locations where S-times saturated are larger
+    # than S-times dry
+    # Find the locations where time of S sat. is larger than time of S dry
+    P = np.where(idxqo >= idxto)
+    Ph = np.where(idxqoh >= idxtoh)
+    x1 = np.linspace(0, np.max([time_sd, time_ss]), 10)
+    y1 = x1
+    axplot.plot(x1, y1, 'g', lw=2) #plot the 1:1 line of match
 
     axplot.tick_params(axis='both', which='major', labelsize=18)
 
     # Plot time serie horizontal
-    axx.plot(idxq,query,'-', color='b',lw=2)
-    axx.plot(idxq,queryh,'--', color='m',lw=2) #The envelope
-    axx.plot(idxq,querya,'-',color='m',lw=2)
+    axx.plot(idxq,query, '-', color='b', lw=2)
+    axx.plot(idxq,queryh, '--', color='m', lw=2) #The envelope
+    axx.plot(idxq,querya, '-', color='m', lw=2)
     axx.grid(color='0.5')
-    axx.axis([t_id,t_fd,1.1*np.min(query),1.1*np.max(queryh)])
+    axx.axis([t_id, t_fd, 1.1 * np.min(query), 1.1 * np.max(queryh)])
     axx.tick_params(axis='both', which='major', labelsize=18)
 
 
     # Plot time serie vertical
-    axy.plot(template,idxt,'-',color='r',lw=2)
-    axy.plot(templateh,idxt,'--',color='m',lw=2)
-    axy.plot(templatea,idxt,'-',color='m',lw=2)
+    axy.plot(template, idxt, '-', color='r', lw=2)
+    axy.plot(templateh, idxt, '--', color='m', lw=2)
+    axy.plot(templatea, idxt, '-', color='m', lw=2)
     axy.grid(color='0.5')
-    axy.axis([1.1*np.min(template),1.1*np.max(templateh),t_id,t_fd])
+    axy.axis([1.1 * np.min(template), 1.1 * np.max(templateh), t_id, t_fd])
     axy.invert_xaxis()
     axy.tick_params(axis='both', which='major', labelsize=18)
 
@@ -269,7 +300,7 @@ def simple_harmonics(a2_value, cross_correlation, use_manager, print_time_lag, l
     axplot.set_title('click on points')
 
     #Global variable for storing the picked coordinates
-    COORDS=[]
+    COORDS = []
     fig.canvas.mpl_connect('pick_event', onpick)
 
     plt.show(block=True)#plt.show(block=True)
@@ -277,13 +308,13 @@ def simple_harmonics(a2_value, cross_correlation, use_manager, print_time_lag, l
     #ESTIMATION OF THE VELOCITIES FROM THE PICKED TIMES
     ##
     #Load the caliper lengths
-    Lengths=np.loadtxt('./'+well+'/'+well+'_Lengths.txt',delimiter=',')
-    L,StdL=rp.Length_sample(Lengths)
+    lengths = np.loadtxt('./{0}/{0}_Lengths.txt'.format(well), delimiter=',')
+    L, StdL = rp.Length_sample(lengths)
 
     #Extract the times from the DTW picking
-    tD,tS=rp.S_values(COORDS)
-    np.savetxt('./'+well+'/'+well+'d/P_time_Picks_dry_'+suffix+'.out',tD) #save the picked times
-    np.savetxt('./'+well+'/'+well+'s/P_time_Picks_sat_'+suffix+'.out',tS) #save the picked times
+    tD, tS = rp.S_values(COORDS)
+    np.savetxt('./{0}/{0}d/P_time_Picks_dry_{1}.out'.format(well, suffix), tD) #save the picked times
+    np.savetxt('./{0}/{0}s/P_time_Picks_sat_{1}.out'.format(well, suffix), tS) #save the picked times
     #Save the histograms
     rp.histogram(tD,'P-arrival (dry)')
     plt.xlabel('Time ($\mu$s)')
@@ -339,20 +370,20 @@ def simple_harmonics(a2_value, cross_correlation, use_manager, print_time_lag, l
         manager.window.showMaximized()
     plt.show()
     plt.savefig('./'+well+'/'+well+'s/Vp_hist_sat_'+suffix+'.pdf',bbox_inches='tight')
-    plt.show(block=True)#plt.show(block=True)
+    plt.show(block=True)
 
     #Plot #5: A Summary plot with the picked intervals
     # definitions for the axes
     left, width = 0.12, 0.60
     bottom, height = 0.08, 0.60
-    bottom_h =  0.16 + width
+    bottom_h = 0.16 + width
     left_h = left + 0.27
     rect_plot = [left_h, bottom, width, height]
     rect_x = [left_h, bottom_h, width, 0.2]
     rect_y = [left, bottom, 0.2, height]
 
     # start with a rectangular Figure
-    fig=plt.figure('Summary', figsize=(10, 10))
+    fig = plt.figure('Summary', figsize=(10, 10))
 
     #axplot = fig.add_subplot(111)
     axplot = plt.axes(rect_plot)
@@ -360,47 +391,57 @@ def simple_harmonics(a2_value, cross_correlation, use_manager, print_time_lag, l
     axy = plt.axes(rect_y)
 
     # Plot the matrix
-    axplot.plot(idxqo,idxto,'k',lw=2)
-    axplot.plot(idxqoa,idxtoa,'m',lw=2)
-    axplot.plot(idxqoh,idxtoh,'--',color='m',lw=2)
-    axplot.axvspan(np.min(tS),np.max(tS),alpha=0.5,color='blue') #plot range of picked times
-    axplot.axvline(np.mean(tS),ymin=t_id,ymax=t_fd,linewidth=2, color='b') #plot mean of the picked times
-    axplot.axhspan(np.min(tD),np.max(tD),alpha=0.5,color='red') #plot range of picked times
-    axplot.axhline(np.mean(tD),xmin=t_id,xmax=t_fd,linewidth=2, color='r') #plot mean of the picked times
-    axplot.axis([t_id,t_fd,t_id,t_fd]) #Give same time scale as template
+    axplot.plot(idxqo, idxto, 'k', lw=2)
+    axplot.plot(idxqoa, idxtoa, 'm', lw=2)
+    axplot.plot(idxqoh, idxtoh, '--', color='m', lw=2)
+    # plot range of picked times
+    axplot.axvspan(np.min(tS), np.max(tS), alpha=0.5, color='blue')
+    # plot mean of the picked times
+    axplot.axvline(np.mean(tS), ymin=t_id, ymax=t_fd, linewidth=2, color='b')
+    # plot range of picked times
+    axplot.axhspan(np.min(tD), np.max(tD), alpha=0.5, color='red')
+    # plot mean of the picked times
+    axplot.axhline(np.mean(tD), xmin=t_id, xmax=t_fd, linewidth=2, color='r')
+    # Give same time scale as template
+    axplot.axis([t_id, t_fd, t_id, t_fd])
     axplot.grid(color='0.5')
 
 
     #Indices in P correspond to locations where S-times saturated are larger than S-times dry
-    P=np.where(idxqo>=idxto) #Find the locations where time of S sat. is larger than time of S dry
-    Ph=np.where(idxqoh>=idxtoh)
+    P = np.where(idxqo >= idxto) #Find the locations where time of S sat. is larger than time of S dry
+    Ph = np.where(idxqoh >= idxtoh)
     #axplot.scatter(idxqo[P],idxto[P],c='r',s=10)
     #axplot.scatter(idxqoh[Ph],idxtoh[Ph],c='r',s=10)
     #Define and plot the 1:1 line of match
-    x1 = np.linspace(0,np.max([timeSd,timeSs]),10)
+    x1 = np.linspace(0, np.max([time_sd, time_ss]), 10)
     y1 = x1
-    axplot.plot(x1,y1,'g') #plot the 1:1 line of match
+    axplot.plot(x1, y1, 'g') #plot the 1:1 line of match
     axplot.tick_params(axis='both', which='major', labelsize=18)
     # Plot time serie horizontal
-    axx.plot(idxq,query,'-', color='b',label='P (sat.)',lw=2)
-    axx.plot(idxq,querya,'-',color='m',lw=2)
-    axx.plot(idxq,queryh,'--', color='m',lw=2) #The envelope
-    axx.axvspan(np.min(tS),np.max(tS),alpha=0.5,color='blue') #plot range of picked times
-    axx.axvline(np.mean(tS),ymin=-10,ymax=10,linewidth=2, color='b') #plot mean of the picked times
+    axx.plot(idxq, query, '-', color='b', label='P (sat.)', lw=2)
+    axx.plot(idxq, querya, '-', color='m', lw=2)
+    # The envelope
+    axx.plot(idxq, queryh, '--', color='m', lw=2)
+    # plot range of picked times
+    axx.axvspan(np.min(tS), np.max(tS), alpha=0.5, color='blue')
+    # plot mean of the picked times
+    axx.axvline(np.mean(tS), ymin=-10, ymax=10, linewidth=2, color='b')
     axx.grid(color='0.5')
-    axx.axis([t_id,t_fd,1.1*np.min(query),1.1*np.max(queryh)])
+    axx.axis([t_id, t_fd, 1.1 * np.min(query), 1.1 * np.max(queryh)])
     axx.tick_params(axis='both', which='major', labelsize=18)
     # Plot time series vertical
-    axy.plot(template,idxt,'-',color='r',label='P (dry)',lw=2)
-    axy.plot(templatea,idxt,'-',color='m',lw=2)
-    axy.plot(templateh,idxt,'--',color='m',lw=2)
-    axy.axhspan(np.min(tD),np.max(tD),alpha=0.5,color='red') #plot range of picked times
-    axy.axhline(np.mean(tD),xmin=-10,xmax=10,linewidth=2, color='r') #plot mean of the picked times
+    axy.plot(template, idxt, '-', color='r', label='P (dry)', lw=2)
+    axy.plot(templatea, idxt, '-', color='m', lw=2)
+    axy.plot(templateh, idxt, '--', color='m', lw=2)
+    # plot range of picked times
+    axy.axhspan(np.min(tD), np.max(tD), alpha=0.5, color='red')
+    # plot mean of the picked times
+    axy.axhline(np.mean(tD), xmin=-10, xmax=10, linewidth=2, color='r')
     axy.grid(color='0.5')
-    axy.axis([1.1*np.min(template),1.1*np.max(templateh),t_id,t_fd])
+    axy.axis([1.1 * np.min(template), 1.1 * np.max(templateh), t_id, t_fd])
     axy.invert_xaxis()
     axy.tick_params(axis='both', which='major', labelsize=18)
-    #Limits
+    # Limits
     axx.set_xlim(axplot.get_xlim())
     axy.set_ylim(axplot.get_ylim())
     # save the figure
@@ -413,12 +454,12 @@ def simple_harmonics(a2_value, cross_correlation, use_manager, print_time_lag, l
     plt.show(block=True)
     # Show the Fourier Spectra of both signals
     plt.figure('Spectra')
-    FS1 = np.abs(np.fft.rfft(S1))
-    PS1 = np.unwrap(np.angle(np.fft.rfft(S1)))
-    f1 = np.fft.rfftfreq(len(S1), d=0.01)
-    FS2 = np.abs(np.fft.rfft(S2))
-    PS2 = np.unwrap(np.angle(np.fft.rfft(S2)))
-    f2 = np.fft.rfftfreq(len(S2), d=0.01)
+    FS1 = np.abs(np.fft.rfft(s1_final))
+    PS1 = np.unwrap(np.angle(np.fft.rfft(s1_final)))
+    f1 = np.fft.rfftfreq(len(s1_final), d=0.01)
+    FS2 = np.abs(np.fft.rfft(s2_final))
+    PS2 = np.unwrap(np.angle(np.fft.rfft(s2_final)))
+    f2 = np.fft.rfftfreq(len(s2_final), d=0.01)
     plt.plot(f1, FS1, 'r', lw=2)
     plt.plot(f2, FS2, 'b', lw=2)
     plt.axis([0, 1.2, 0, np.max([FS1, FS2])])

@@ -28,10 +28,6 @@ def onpick(event):
     COORDS.append((xdata[ind], ydata[ind]))
     return COORDS
 
-def crosscorr_lags(A,B):
-    C=np.correlate(A,B,mode='full')
-    lags=np.linspace(-len(A),len(A),len(C))
-    return lags,C
 
 def cross_corr_p():
     global COORDS
