@@ -2,17 +2,33 @@
 
 ## Installation
 
-This will guide you through the steps needed to install ``poropyck``.
+### Option 1: conda
 
-### Installing the PyPI package
+The ``poropyck`` package is available on Anaconda Cloud
 
-This ``poropyck`` package is available on PyPI.
+    conda install poropyck -c freemapa
+
+This should automatically get the necessary dependencies, when possible, and
+is generally the easiest way to go.
+
+### Option 2: pip
+
+The ``poropyck`` package is also available on PyPI.
 
     pip install poropyck
 
 Installing via ``pip`` should get most of the Python dependencies you need.
 
-The following is a list of packages used during development:
+### Option 3 (advanced): GitHub
+
+If the other option do no suit your needs, the package source is available on
+GitHub.
+
+The main script is located at ``poropyck/pick_dtw.py`` and sample data can be
+found in ``poropyck/demo/*``.
+
+
+For reference, the following is a list of packages used during development:
 
  * python 3.6.3
  * numpy 1.13.3
@@ -20,50 +36,68 @@ The following is a list of packages used during development:
  * scipy 0.19.1
  * mcerp3 1.0.0
 
-## Scripts
+## Execution
 
-Installing the package will provide you with the following scripts:
+After installation, you should be able to run ``poropyck`` from the command-line.
 
-### Velocity picking (data on the bench)
+    poropyck
 
- * *simple\_harmonics\_1*: test the DTW picking with simple functions
- * *simple\_harmonics\_2*: test the DTW picking with simple functions
- * *pick\_vp\_dtw*: do picking of P-waves using Dynamic Time Warping
- * *pick\_vs\_dtw*: do picking of S-waves using Dynamic Time Warping
- * *cross\_corr\_p*: calculate the time lag through cross-correlation for the
-   P-wave
- * *cross\_corr\_s*: calculate the time lag through cross-correlation for the
-   S-wave
+This will execute using sample data. To use your own data, you must specify a
+*template signal*, *query signal*, and *metadata*.
 
-### Velocity picking (data on the vessel)
+    poropyck -t TEMPLATE_SIGNAL -q QUERY_SIGNAL -m METADATA
 
- * *vp\_dtw\_saturated\_loop*: back-track P-wave picking points between waveforms
-   from high to low pressures
- * *vs\_dtw\_saturated\_loop*: back-track S-wave picking points between waveforms
-   from high to low pressures
+## Data files
 
-### Densities and porosities
+The 3 files used as input to ``poropyck`` are all simple text files. The
+signal files are standard CSV files. **NOTE:** *Signal data is not expected
+to begin until line 22 of these files, so data preprocessing may be necessary
+to accommodate this.*
 
-Depending on the denominator used in the Archimedes calculations the results
-can be different.  ``densities\_porosity2`` relies on the weights of the
-saturated samples in water which are more accurate to measure.  Both
-subroutines are included for comparison.
+Your signal files should look like this:
 
- * *densities\_porosity*: Calculate densities and porosities from the Archimedes
-   measurements
- * *densities\_porosity2*: Calculate densities and porosities from the Archimedes
-   measurements
+    # 21 lines ignored
+    ...
+    -7.2000e-07,-0.0261719  # line 22
+    -7.1600e-07,-0.0267969
+    ...
+    3.9276e-05,-0.0310156
+    # end of file
 
-### Samples
+If you want to test your signal file, you can use the following Python code
+to read the signal data (replace ``SIGNAL_FILE`` with your filename):
 
-Sample data can be installed using the following script:
+    import numpy
+    print(numpy.loadtxt(SIGNAL_FILE, delimiter=',', skiprows=21).T[:2])
 
- * *install_poropyck_samples*: installs sample data into the specified location
+The metadata should contain JSON length data at key location
+``['length']['raw']``. The value at this key location should be a list of one
+or more decimal length measurements. These values are used to compute an
+uncertain length measurement. Any other JSON data is ignored.
 
-### Miscellaneous subroutines
+Your metadata file should look like this:
 
-Calculate elastic constants and densities from the pycnometer files:
+    {
+        "length": {
+            "raw": [
+                5.256,
+                5.250,
+                5.254,
+                5.254,
+                5.252,
+                5.252,
+                5.258,
+                5.265,
+                5.255,
+                5.252
+            ]
+        }
+    }
 
- * *elastic\_constants*
- * *elastic\_constants\_pyc*
- * *pycnometer\_densities*
+To test your metadata file, you can use this Python code (replace
+METADATA_FILE with your filename):
+
+    import json
+    with open(METADATA_FILE) as dat:
+        metadata = json.load(dat)
+    print(metadata['length']['raw'])
