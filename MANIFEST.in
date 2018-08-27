@@ -1,2 +1,1 @@
-include poropyck/Samples_Depth.txt
-recursive-include poropyck/samples *
+recursive-include poropyck/demo *
