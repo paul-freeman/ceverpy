@@ -1,0 +1,31 @@
+package:
+    name: poropyck
+    version: "{{ load_setup_py_data().version }}"
+
+source:
+    path: .
+
+build:
+    number: 1
+
+requirements:
+    run:
+        - dtw
+        - matplotlib
+        - numpy
+        - scipy
+
+test:
+    requires:
+        - dtw
+        - matplotlib
+        - numpy
+        - scipy
+
+    import:
+        - dtw
+
+about:
+    home: https://github.com/paul-freeman/poropyck
+    license: GPL
+    license_file: LICENSE
