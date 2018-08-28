@@ -6,24 +6,37 @@ source:
     path: .
 
 build:
-    number: 1
+    script: python setup.py install 
 
 requirements:
+    build:
+        - python
+        - dtw >=1.0.2
+        - mcerp3
+        - matplotlib <2.2
+        - numpy
+        - scipy
+        - pyyaml
+        - setuptools
+
     run:
-        - dtw
-        - matplotlib
+        - python
+        - dtw >=1.0.2
+        - mcerp3
+        - matplotlib <2.2
         - numpy
         - scipy
 
 test:
     requires:
-        - dtw
-        - matplotlib
+        - python
+        - dtw >=1.0.2
+        - mcerp3
+        - matplotlib <2.2
         - numpy
         - scipy
-
     import:
-        - dtw
+        - poropyck
 
 about:
     home: https://github.com/paul-freeman/poropyck

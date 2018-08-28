@@ -1,3 +1,5 @@
 build/
 dist/
 poropyck.egg-info/
+poropyck/__pycache__/
+.vscode/

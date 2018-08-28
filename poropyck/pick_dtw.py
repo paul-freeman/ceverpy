@@ -2,6 +2,7 @@
 import argparse
 import json
 
+from dtw import dtw  # pylint: disable=no-name-in-module
 import matplotlib.pyplot as plt
 import mcerp3 as mc
 import numpy as np
@@ -9,8 +10,6 @@ from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 from pkg_resources import Requirement, resource_filename
 from scipy.signal import hilbert
 from scipy.stats import norm
-
-from dtw import dtw  # pylint: disable=no-name-in-module
 
 # colours
 TEMPLATE_COLOR = 'tan'
@@ -485,7 +484,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def pick():
     """the main poropyck code"""
     args = parse_args()
 
@@ -528,7 +527,3 @@ def main():
         color=QUERY_COLOR
     )
     Poropyck(template, query, mc_length)
-
-
-if __name__ == "__main__":
-    main()
