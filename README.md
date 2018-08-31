@@ -47,6 +47,18 @@ This will execute using sample data. To use your own data, you must specify a
 
     poropyck -t TEMPLATE_SIGNAL -q QUERY_SIGNAL -m METADATA
 
+The velocity picked will be saved into the metadata file and is accessible
+like this (presuming JSON file is named ``metadata.json``):
+
+    import json
+    with open('metadata.json') as dat:
+        metadata = json.load(dat)
+    print(metadata['template']['velocity']['mean'])
+    print(metadata['template']['velocity']['std'])
+    print(metadata['query']['velocity']['mean'])
+    print(metadata['query']['velocity']['std'])
+
+
 ## Data files
 
 The 3 files used as input to ``poropyck`` are all simple text files. The

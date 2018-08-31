@@ -2,14 +2,15 @@
 import argparse
 import json
 
-from dtw import dtw  # pylint: disable=no-name-in-module
 import matplotlib.pyplot as plt
-import mcerp3 as mc
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
 from pkg_resources import Requirement, resource_filename
 from scipy.signal import hilbert
 from scipy.stats import norm
+import mcerp3 as mc
+from dtw import dtw  # pylint: disable=no-name-in-module
+
 
 # colours
 TEMPLATE_COLOR = 'tan'
@@ -23,25 +24,33 @@ PATH_COLOR = 'black'
 class Poropyck:
     """compare using dynamic time warping"""
 
-    def __init__(self, template, query, length):
+    def __init__(self):
+        self.fig = None
+        self.ax = None
+        self.length = None
+        self.template = None
+        self.query = None
+        self.indices1 = None
+        self.indices1a = None
+        self.indices1h = None
+        self.indices2 = None
+        self.indices2a = None
+        self.indices2h = None
+        self.summary_xlim = None
+        self.summary_ylim = None
+
+    def show(self, template, query, length):
+        """show and start the picking process"""
         self.fig = plt.figure()
         self.ax = {
             'template': self.fig.add_axes([0.030, 0.865, 0.90, 0.100]),
             'query': self.fig.add_axes([0.030, 0.700, 0.90, 0.100]),
             'dtw': self.fig.add_axes([0, 0.15, 0.200*1.65, 0.220*1.65], projection='3d'),
             'summary': self.fig.add_axes([0.100+0.32, 0.08, 0.25, 0.4]),
-
             'template_clicks': self.fig.add_axes([0.400+0.32, 0.38, 0.1, 0.200]),
             'template_velocity': self.fig.add_axes([0.520+0.32, 0.38, 0.1, 0.200]),
-            # 'template_bulk': self.fig.add_axes([0.640, 0.355, 0.1, 0.200]),
-            # 'template_poisson': self.fig.add_axes([0.760, 0.355, 0.1, 0.200]),
-            # 'template_youngs': self.fig.add_axes([0.880, 0.355, 0.1, 0.200]),
-
             'query_clicks': self.fig.add_axes([0.400+0.32, 0.080, 0.1, 0.200]),
             'query_velocity': self.fig.add_axes([0.520+0.32, 0.080, 0.1, 0.200]),
-            # 'query_bulk': self.fig.add_axes([0.640, 0.080, 0.1, 0.200]),
-            # 'query_poisson': self.fig.add_axes([0.760, 0.080, 0.1, 0.200]),
-            # 'query_youngs': self.fig.add_axes([0.880, 0.080, 0.1, 0.200])
         }
         self.ax['x'] = self.fig.add_axes(
             [0.100+0.32, 0.48, 0.25, 0.1],
@@ -51,7 +60,6 @@ class Poropyck:
             [0.030+0.32, 0.08, 0.07, 0.4],
             sharey=self.ax['summary']
         )
-
         self.ax['template'].get_yaxis().set_visible(False)
         self.ax['query'].get_yaxis().set_visible(False)
         self.ax['x'].get_yaxis().set_visible(False)
@@ -68,16 +76,8 @@ class Poropyck:
             'Query signal: select the area of interest')
 
         self.length = length
-
         self.template = template
         self.query = query
-
-        self.indices1 = None
-        self.indices1a = None
-        self.indices1h = None
-        self.indices2 = None
-        self.indices2a = None
-        self.indices2h = None
 
         self.fig.canvas.mpl_connect('button_press_event', self.onpress)
         self.fig.canvas.mpl_connect('button_release_event', self.onrelease)
@@ -90,6 +90,7 @@ class Poropyck:
         self.template.plot(self.ax['template'])
         self.query.plot(self.ax['query'])
         plt.show()
+        return self.template.velocity, self.query.velocity
 
     def onpress(self, event):
         """mouse button pressed"""
@@ -193,7 +194,6 @@ class Poropyck:
         query_times = self.query.picked_times
         query_signal = self.query.picked_signal
         queryh = self.query.hilbert_abs()
-        # querya = self.query.hilbert_angle()
         x_ax.clear()
         x_ax.set_title('Select points of interest', y=1.25)
         x_ax.plot(query_times, query_signal, '-', c=QUERY_COLOR, lw=2)
@@ -210,7 +210,6 @@ class Poropyck:
         template_times = self.template.picked_times
         template_signal = self.template.picked_signal
         templateh = self.template.hilbert_abs()
-        # templatea = self.template.hilbert_angle()
         y_ax.clear()
         y_ax.plot(template_signal, template_times, c=TEMPLATE_COLOR, lw=2)
         y_ax.fill_betweenx(template_times, templateh, -templateh,
@@ -227,20 +226,10 @@ class Poropyck:
         end = len(self.indices1)
         idxto = np.take(template_times, self.indices2[:end].astype(int) - 1)
         idxqo = np.take(query_times, self.indices1.astype(int) - 1)
-        # to = template_signal[self.indices2[:end] - 1]
-        # qo = query_signal[self.indices1 - 1]
 
         end = len(self.indices1h)
         idxtoh = np.take(template_times, self.indices2h[:end].astype(int) - 1)
         idxqoh = np.take(query_times, self.indices1h.astype(int) - 1)
-        # toh = templateh[self.indices2h[:end] - 1]
-        # qoh = queryh[self.indices1h - 1]
-
-        # end = len(self.indices1a)
-        # idxtoa = template_times[self.indices2a[:end] - 1]
-        # idxqoa = query_times[self.indices1a - 1]
-        # toa = templatea[self.indices2a[:end] - 1]
-        # qoa = querya[self.indices1a - 1]
 
         summary_ax.clear()
         summary_ax.axis('equal')
@@ -286,14 +275,8 @@ class Poropyck:
         """plot the Monte Carlo distributions"""
         self.template.plot_clicks(self.ax['template_clicks'])
         self.template.plot_velocity(self.ax['template_velocity'])
-        # self.template.plot_bulk(self.ax['template_bulk'])
-        # self.template.plot_poisson(self.ax['template_poisson'])
-        # self.template.plot_youngs(self.ax['template_youngs'])
         self.query.plot_clicks(self.ax['query_clicks'])
         self.query.plot_velocity(self.ax['query_velocity'])
-        # self.query.plot_bulk(self.ax['query_bulk'])
-        # self.query.plot_poisson(self.ax['query_poisson'])
-        # self.query.plot_youngs(self.ax['query_youngs'])
 
     def clear_output_axes(self):
         """clear all output data"""
@@ -310,18 +293,17 @@ class Poropyck:
 class Signal:
     """one signal to be compared"""
 
-    def __init__(self, data, length, density, shear, color='blue'):
+    def __init__(self, data, length, color='blue'):
         secs, self.signal = data
         self.times = secs * 1e6
         self.length = length
-        self.density = density
-        self.shear = shear
         self.color = color
         self.start = self.times[len(self.times) // 2]
         self.finish = self.times[len(self.times) // 2 + 1]
         self.pressed = False
         self.picks = []
         self.picked_times, self.picked_signal = self.get_picked_data()
+        self.velocity = None
 
     def onpress(self, event):
         """mouse button pressed"""
@@ -375,44 +357,17 @@ class Signal:
 
     def plot_velocity(self, ax):
         """plot Monte Carlo velocity distribution"""
+        time_mean, time_std = self.time_picks()[2:]
+        time = mc.Normal(time_mean, time_std) if time_std > 0 else time_mean
+        distance = self.length
+        self.velocity = (distance / time) * 1e4
         ax.clear()
         plt.sca(ax)
-        velocity = self.mc_velocity()
-        velocity.plot(color=self.color, lw=2, ls='dashed')
-        velocity.plot(hist=True, color=self.color, alpha=0.6)
+        self.velocity.plot(color=self.color, lw=2, ls='dashed')
+        self.velocity.plot(hist=True, color=self.color, alpha=0.6)
         ax.set_title('Velocity\n{:5g}±{:5g}'.format(
-            velocity.mean, velocity.std))
+            self.velocity.mean, self.velocity.std))
         ax.set_xlabel('m/s')
-
-    def plot_bulk(self, ax):
-        """plot Monte Carlo bulk modulus distribution"""
-        ax.clear()
-        ax.set_title('bulk modulus')
-        plt.sca(ax)
-        bulk = self.bulk_modulus()
-        bulk.plot(color=self.color, lw=2, ls='dashed')
-        bulk.plot(hist=True, color=self.color, alpha=0.6)
-        ax.set_xlabel('$K$ (GPa)')
-
-    def plot_poisson(self, ax):
-        """plot Monte Carlo Poisson's ratio distribution"""
-        ax.clear()
-        ax.set_title("Poisson's ratio")
-        plt.sca(ax)
-        poisson = self.poissons_ratio()
-        poisson.plot(color=self.color, lw=2, ls='dashed')
-        poisson.plot(hist=True, color=self.color, alpha=0.6)
-        ax.set_xlabel('$v$')
-
-    def plot_youngs(self, ax):
-        """plot Monte Carlo Young's modulus distribution"""
-        ax.clear()
-        ax.set_title("Young's modulus")
-        plt.sca(ax)
-        youngs = self.young_modulus()
-        youngs.plot(color=self.color, lw=2, ls='dashed')
-        youngs.plot(hist=True, color=self.color, alpha=0.6)
-        ax.set_xlabel('$E$ (GPa)')
 
     def hilbert_angle(self):
         """get the angle of the hilbert transform"""
@@ -429,38 +384,11 @@ class Signal:
             return np.min(time_picks), np.max(time_picks), np.mean(time_picks), np.std(time_picks)
         return -1, 1, 0, 0.25
 
-    def mc_velocity(self):
-        """calculate velocity using Monte Carlo error propagation"""
-        time_mean, time_std = self.time_picks()[2:]
-        time = mc.Normal(time_mean, time_std) if time_std > 0 else time_mean
-        distance = self.length
-        return (distance / time) * 1e4
-
-    def bulk_modulus(self):
-        """calculate bulk modulus"""
-        rho = self.density
-        v = self.mc_velocity()
-        mu = self.shear
-        return (1e-6 * rho * v**2) - ((4/3) * mu)
-
-    def young_modulus(self):
-        """calculate young modulus"""
-        mu = self.shear
-        k = self.bulk_modulus()
-        return (3*k - 2*mu) / (2*(3*k + mu))
-
-    def poissons_ratio(self):
-        """calculate Poisson's ratio"""
-        mu = self.shear
-        k = self.bulk_modulus()
-        return (9*k*mu) / (3*k + mu)
-
 
 def parse_args():
     """parse poropyck args"""
     resource_filename(Requirement.parse('poropyck'),
                       'poropyck/demo/NM11_2087_4A_sat.csv')
-
     parser = argparse.ArgumentParser(
         description='poropyck: wave velocity tool')
     parser.add_argument(
@@ -477,53 +405,70 @@ def parse_args():
         metavar='QUERY_CSV')
     parser.add_argument(
         '-m', '--metadata',
-        help='a JSON file containing sample metadata',
+        help='a JSON file for collecting metadata',
         default=resource_filename(Requirement.parse(
             'poropyck'), 'poropyck/demo/NM11_2087_4A_meta.json'),
         metavar='METADATA')
     return parser.parse_args()
 
 
-def pick():
-    """the main poropyck code"""
+def calc_mc_length(metadata):
+    """calculate the monte carlo length value"""
+    try:
+        return mc.Normal(metadata['length']['mean'], metadata['length']['std'])
+    except KeyError:
+        raw = metadata['length']['raw']
+        metadata['length']['mean'] = np.mean(raw)
+        metadata['length']['std'] = np.std(raw)
+        return mc.Normal(metadata['length']['mean'], metadata['length']['std'])
+
+
+def pick_velocity():
+    """add picked velocity to metadata"""
     args = parse_args()
 
     with open(args.metadata) as dat:
         metadata = json.load(dat)
-    mc_length = mc.Normal(
-        np.mean(metadata['length']['raw']),
-        np.std(metadata['length']['raw'])
-    )
-    # Dry (template)
-    mc_density = mc.Normal(
-        metadata['density']['dry']['mean'],
-        metadata['density']['dry']['std']
-    )
-    mc_shear = mc.Normal(
-        metadata['shear']['dry']['mu'],
-        metadata['shear']['dry']['d_mu']
-    )
+    mc_length = calc_mc_length(metadata)
     template = Signal(
         np.loadtxt(args.template, delimiter=',', skiprows=21).T[:2],
         mc_length,
-        mc_density,
-        mc_shear,
         color=TEMPLATE_COLOR
-    )
-    # Saturated (query)
-    mc_density = mc.Normal(
-        metadata['density']['sat']['mean'],
-        metadata['density']['sat']['std']
-    )
-    mc_shear = mc.Normal(
-        metadata['shear']['sat']['mu'],
-        metadata['shear']['sat']['d_mu']
     )
     query = Signal(
         np.loadtxt(args.query, delimiter=',', skiprows=21).T[:2],
         mc_length,
-        mc_density,
-        mc_shear,
         color=QUERY_COLOR
     )
-    Poropyck(template, query, mc_length)
+    poro = Poropyck()
+    template_velocity, query_velocity = poro.show(template, query, mc_length)
+    try:
+        metadata['template']['velocity']['mean'] = template_velocity.mean
+        metadata['template']['velocity']['std'] = template_velocity.std
+        metadata['query']['velocity']['mean'] = query_velocity.mean
+        metadata['query']['velocity']['std'] = query_velocity.std
+    except KeyError:
+        try:
+            metadata['template']['velocity'] = {
+                'mean': template_velocity.mean,
+                'std': template_velocity.std
+            }
+            metadata['query']['velocity'] = {
+                'mean': query_velocity.mean,
+                'std': query_velocity.std
+            }
+        except KeyError:
+            metadata['template'] = {
+                'velocity': {
+                    'mean': template_velocity.mean,
+                    'std': template_velocity.std
+                }
+            }
+            metadata['query'] = {
+                'velocity': {
+                    'mean': query_velocity.mean,
+                    'std': query_velocity.std
+                }
+            }
+    with open(args.metadata, 'w') as dat:
+        json.dump(metadata, dat, indent=2)
