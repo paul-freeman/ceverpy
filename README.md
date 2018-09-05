@@ -24,8 +24,8 @@ Installing via ``pip`` should get most of the Python dependencies you need.
 If the other option do no suit your needs, the package source is available on
 GitHub.
 
-The main script is located at ``poropyck/pick_dtw.py`` and sample data can be
-found in ``poropyck/demo/*``.
+The main script is located at ``poropyck/pick_dtw.py`` and sample data and
+scripts can be found in ``demo/*``.
 
 
 For reference, the following is a list of packages used during development:
@@ -34,39 +34,42 @@ For reference, the following is a list of packages used during development:
  * numpy 1.13.3
  * matplotlib 2.1.0
  * scipy 0.19.1
- * mcerp3 1.0.0
 
 ## Execution
 
-After installation, you should be able to run ``poropyck`` from the command-line.
+As of version 1.4, ``poropyck`` is provided as a library. So you can simply
+import it into Python.
 
-    poropyck
+The following code sample demonstrates the usage:
 
-This will execute using sample data. To use your own data, you must specify a
-*template signal*, *query signal*, and *metadata*.
+    import poropyck
 
-    poropyck -t TEMPLATE_SIGNAL -q QUERY_SIGNAL -m METADATA
+    lengths = [5.256, 5.25, 5.254, 5.254, 5.252, 5.252, 5.258, 5.265, 5.255, 5.252]
+    dry_data = 'NM11_2087_4A_dry.csv'
+    sat_data = 'NM11_2087_4A_sat.csv'
 
-The velocity picked will be saved into the metadata file and is accessible
-like this (presuming JSON file is named ``metadata.json``):
+    dtw = poropyck.DTW(dry_data, sat_data, lengths)
+    dry, sat = dtw.pick()
 
-    import json
-    with open('metadata.json') as dat:
-        metadata = json.load(dat)
-    print(metadata['template']['velocity']['mean'])
-    print(metadata['template']['velocity']['std'])
-    print(metadata['query']['velocity']['mean'])
-    print(metadata['query']['velocity']['std'])
+The resulting ``dry`` and ``sat`` variables in this example will contain
+dictionary values for *distance*, *time*, and *velocity*, based on the user
+picks. These variables will be *ufloat* values from the ``uncertainties``
+package and so encapsulate the propogated error. For example, the saturated
+velocity mean value could be viewed using ``sat['velocity'].n``. Or the dry
+time deviation could be viewed using ``dry['time'].s``.
 
 
-## Data files
+## Input data
 
-The 3 files used as input to ``poropyck`` are all simple text files. The
-signal files are standard CSV files. **NOTE:** *Signal data is not expected
-to begin until line 22 of these files, so data preprocessing may be necessary
-to accommodate this.*
+It should be obvious that the ``lengths`` input into the code is just a list
+of length measurements. If the list contains only 1 measurement, the length
+variable will have no uncertainty, but the code will still work.
 
-Your signal files should look like this:
+The 2 signal files used as input to ``poropyck`` are both CSV files.
+**NOTE:** *The data is not expected to begin until line 22 of these files, so
+data preprocessing may be necessary to accommodate this.*
+
+For reference, your signal files should follow this format:
 
     # 21 lines ignored
     ...
@@ -81,35 +84,3 @@ to read the signal data (replace ``SIGNAL_FILE`` with your filename):
 
     import numpy
     print(numpy.loadtxt(SIGNAL_FILE, delimiter=',', skiprows=21).T[:2])
-
-The metadata should contain JSON length data at key location
-``['length']['raw']``. The value at this key location should be a list of one
-or more decimal length measurements. These values are used to compute an
-uncertain length measurement. Any other JSON data is ignored.
-
-Your metadata file should look like this:
-
-    {
-        "length": {
-            "raw": [
-                5.256,
-                5.250,
-                5.254,
-                5.254,
-                5.252,
-                5.252,
-                5.258,
-                5.265,
-                5.255,
-                5.252
-            ]
-        }
-    }
-
-To test your metadata file, you can use this Python code (replace
-METADATA_FILE with your filename):
-
-    import json
-    with open(METADATA_FILE) as dat:
-        metadata = json.load(dat)
-    print(metadata['length']['raw'])

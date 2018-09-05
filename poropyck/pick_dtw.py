@@ -1,35 +1,44 @@
 """Dynamic time warping"""
-import argparse
-import json
-
 import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D  # pylint: disable=unused-import
-from pkg_resources import Requirement, resource_filename
 from scipy.signal import hilbert
 from scipy.stats import norm
-import mcerp3 as mc
+import uncertainties
 from dtw import dtw  # pylint: disable=no-name-in-module
 
 
 # colours
-TEMPLATE_COLOR = 'tan'
-QUERY_COLOR = 'blue'
 HIGHLIGHT_COLOR = 'thistle'
 ENVELOPE_COLOR = 'lightpink'
 ENVELOPE_ALPHA = 0.4
 PATH_COLOR = 'black'
 
 
-class Poropyck:
+class DTW:
     """compare using dynamic time warping"""
 
-    def __init__(self):
+    def __init__(self, template_path, query_path, length_data, template_color='tan', query_color='blue'):
         self.fig = None
         self.ax = None
-        self.length = None
-        self.template = None
-        self.query = None
+        self.template_color = template_color
+        self.query_color = query_color
+        length_mean = np.mean(length_data)
+        length_std = np.std(length_data)
+        self.length = (
+            length_mean if length_std == 0.0
+            else uncertainties.ufloat(length_mean, length_std)
+        )
+        self.template = Signal(
+            np.loadtxt(template_path, delimiter=',', skiprows=21).T[:2],
+            self.length,
+            color=template_color
+        )
+        self.query = Signal(
+            np.loadtxt(query_path, delimiter=',', skiprows=21).T[:2],
+            self.length,
+            color=query_color
+        )
         self.indices1 = None
         self.indices1a = None
         self.indices1h = None
@@ -39,8 +48,8 @@ class Poropyck:
         self.summary_xlim = None
         self.summary_ylim = None
 
-    def show(self, template, query, length):
-        """show and start the picking process"""
+    def pick(self):
+        """show plots and start the picking process"""
         self.fig = plt.figure()
         self.ax = {
             'template': self.fig.add_axes([0.030, 0.865, 0.90, 0.100]),
@@ -75,10 +84,6 @@ class Poropyck:
         self.ax['query'].set_title(
             'Query signal: select the area of interest')
 
-        self.length = length
-        self.template = template
-        self.query = query
-
         self.fig.canvas.mpl_connect('button_press_event', self.onpress)
         self.fig.canvas.mpl_connect('button_release_event', self.onrelease)
         self.fig.canvas.mpl_connect('motion_notify_event', self.onmotion)
@@ -90,7 +95,17 @@ class Poropyck:
         self.template.plot(self.ax['template'])
         self.query.plot(self.ax['query'])
         plt.show()
-        return self.template.velocity, self.query.velocity
+        template_data = {
+            'distance': self.length,
+            'time': self.template.time,
+            'velocity': self.template.velocity
+        }
+        query_data = {
+            'distance': self.length,
+            'time': self.query.time,
+            'velocity': self.query.velocity
+        }
+        return template_data, query_data
 
     def onpress(self, event):
         """mouse button pressed"""
@@ -196,7 +211,7 @@ class Poropyck:
         queryh = self.query.hilbert_abs()
         x_ax.clear()
         x_ax.set_title('Select points of interest', y=1.25)
-        x_ax.plot(query_times, query_signal, '-', c=QUERY_COLOR, lw=2)
+        x_ax.plot(query_times, query_signal, '-', c=self.query_color, lw=2)
         x_ax.fill_between(query_times, queryh, -queryh,
                           color=ENVELOPE_COLOR, alpha=ENVELOPE_ALPHA)
         try:
@@ -211,7 +226,7 @@ class Poropyck:
         template_signal = self.template.picked_signal
         templateh = self.template.hilbert_abs()
         y_ax.clear()
-        y_ax.plot(template_signal, template_times, c=TEMPLATE_COLOR, lw=2)
+        y_ax.plot(template_signal, template_times, c=self.template_color, lw=2)
         y_ax.fill_betweenx(template_times, templateh, -templateh,
                            color=ENVELOPE_COLOR, alpha=ENVELOPE_ALPHA)
         try:
@@ -237,8 +252,8 @@ class Poropyck:
                                 color=ENVELOPE_COLOR, alpha=ENVELOPE_ALPHA)
         summary_ax.fill_betweenx(idxqoh, idxtoh, idxqoh,
                                  color=ENVELOPE_COLOR, alpha=ENVELOPE_ALPHA)
-        summary_ax.plot(idxqo, idxto, c=TEMPLATE_COLOR, picker=5, lw=2)
-        summary_ax.plot(idxqo, idxto, c=QUERY_COLOR, alpha=0.25, lw=2)
+        summary_ax.plot(idxqo, idxto, c=self.template_color, picker=5, lw=2)
+        summary_ax.plot(idxqo, idxto, c=self.query_color, alpha=0.25, lw=2)
 
         times = np.linspace(
             0, np.max([self.template.times, self.query.times]), 10)
@@ -304,6 +319,7 @@ class Signal:
         self.picks = []
         self.picked_times, self.picked_signal = self.get_picked_data()
         self.velocity = None
+        self.time = None
 
     def onpress(self, event):
         """mouse button pressed"""
@@ -356,17 +372,29 @@ class Signal:
         ax.set_xlabel(r'$\mu$s')
 
     def plot_velocity(self, ax):
-        """plot Monte Carlo velocity distribution"""
+        """plot velocity distribution"""
         time_mean, time_std = self.time_picks()[2:]
-        time = mc.Normal(time_mean, time_std) if time_std > 0 else time_mean
         distance = self.length
-        self.velocity = (distance / time) * 1e4
+        self.time = time_mean if time_std == 0.0 else uncertainties.ufloat(
+            time_mean, time_std)
+        self.velocity = (self.length / self.time) * 1e4
         ax.clear()
         plt.sca(ax)
-        self.velocity.plot(color=self.color, lw=2, ls='dashed')
-        self.velocity.plot(hist=True, color=self.color, alpha=0.6)
-        ax.set_title('Velocity\n{:5g}±{:5g}'.format(
-            self.velocity.mean, self.velocity.std))
+        if isinstance(self.velocity, uncertainties.core.AffineScalarFunc):
+            x = np.linspace(
+                norm.ppf(0.01, self.velocity.n, self.velocity.s),
+                norm.ppf(0.99, self.velocity.n, self.velocity.s),
+                1000
+            )
+            ax.plot(x, norm.pdf(x, self.velocity.n, self.velocity.s),
+                    color=self.color, lw=2, ls='dashed')
+            ax.set_title('Velocity\n{:5g}±{:5g}'.format(
+                self.velocity.n, self.velocity.s))
+        else:
+            self.velocity.plot(color=self.color, lw=2, ls='dashed')
+            self.velocity.plot(hist=True, color=self.color, alpha=0.6)
+            ax.set_title('Velocity\n{:5g}±{:5g}'.format(
+                self.velocity.mean, self.velocity.std))
         ax.set_xlabel('m/s')
 
     def hilbert_angle(self):
@@ -381,94 +409,7 @@ class Signal:
         """return picked time data"""
         if self.picks:
             time_picks = np.array(self.picks)
+            if len(time_picks) == 1:
+                return time_picks[0], time_picks[0], time_picks[0], 1e-50
             return np.min(time_picks), np.max(time_picks), np.mean(time_picks), np.std(time_picks)
         return -1, 1, 0, 0.25
-
-
-def parse_args():
-    """parse poropyck args"""
-    resource_filename(Requirement.parse('poropyck'),
-                      'poropyck/demo/NM11_2087_4A_sat.csv')
-    parser = argparse.ArgumentParser(
-        description='poropyck: wave velocity tool')
-    parser.add_argument(
-        '-t', '--template',
-        help='the CSV file containing template signal data',
-        default=resource_filename(Requirement.parse(
-            'poropyck'), 'poropyck/demo/NM11_2087_4A_dry.csv'),
-        metavar='TEMPLATE_CSV')
-    parser.add_argument(
-        '-q', '--query',
-        help='the CSV file containing query signal data',
-        default=resource_filename(Requirement.parse(
-            'poropyck'), 'poropyck/demo/NM11_2087_4A_sat.csv'),
-        metavar='QUERY_CSV')
-    parser.add_argument(
-        '-m', '--metadata',
-        help='a JSON file for collecting metadata',
-        default=resource_filename(Requirement.parse(
-            'poropyck'), 'poropyck/demo/NM11_2087_4A_meta.json'),
-        metavar='METADATA')
-    return parser.parse_args()
-
-
-def calc_mc_length(metadata):
-    """calculate the monte carlo length value"""
-    try:
-        return mc.Normal(metadata['length']['mean'], metadata['length']['std'])
-    except KeyError:
-        raw = metadata['length']['raw']
-        metadata['length']['mean'] = np.mean(raw)
-        metadata['length']['std'] = np.std(raw)
-        return mc.Normal(metadata['length']['mean'], metadata['length']['std'])
-
-
-def pick_velocity():
-    """add picked velocity to metadata"""
-    args = parse_args()
-
-    with open(args.metadata) as dat:
-        metadata = json.load(dat)
-    mc_length = calc_mc_length(metadata)
-    template = Signal(
-        np.loadtxt(args.template, delimiter=',', skiprows=21).T[:2],
-        mc_length,
-        color=TEMPLATE_COLOR
-    )
-    query = Signal(
-        np.loadtxt(args.query, delimiter=',', skiprows=21).T[:2],
-        mc_length,
-        color=QUERY_COLOR
-    )
-    poro = Poropyck()
-    template_velocity, query_velocity = poro.show(template, query, mc_length)
-    try:
-        metadata['template']['velocity']['mean'] = template_velocity.mean
-        metadata['template']['velocity']['std'] = template_velocity.std
-        metadata['query']['velocity']['mean'] = query_velocity.mean
-        metadata['query']['velocity']['std'] = query_velocity.std
-    except KeyError:
-        try:
-            metadata['template']['velocity'] = {
-                'mean': template_velocity.mean,
-                'std': template_velocity.std
-            }
-            metadata['query']['velocity'] = {
-                'mean': query_velocity.mean,
-                'std': query_velocity.std
-            }
-        except KeyError:
-            metadata['template'] = {
-                'velocity': {
-                    'mean': template_velocity.mean,
-                    'std': template_velocity.std
-                }
-            }
-            metadata['query'] = {
-                'velocity': {
-                    'mean': query_velocity.mean,
-                    'std': query_velocity.std
-                }
-            }
-    with open(args.metadata, 'w') as dat:
-        json.dump(metadata, dat, indent=2)
