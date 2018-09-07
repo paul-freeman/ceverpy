@@ -52,21 +52,21 @@ class DTW:
         """show plots and start the picking process"""
         self.fig = plt.figure()
         self.ax = {
-            'template': self.fig.add_axes([0.030, 0.865, 0.90, 0.100]),
-            'query': self.fig.add_axes([0.030, 0.700, 0.90, 0.100]),
-            'dtw': self.fig.add_axes([0, 0.15, 0.200*1.65, 0.220*1.65], projection='3d'),
-            'summary': self.fig.add_axes([0.100+0.32, 0.08, 0.25, 0.4]),
-            'template_clicks': self.fig.add_axes([0.400+0.32, 0.38, 0.1, 0.200]),
-            'template_velocity': self.fig.add_axes([0.520+0.32, 0.38, 0.1, 0.200]),
-            'query_clicks': self.fig.add_axes([0.400+0.32, 0.080, 0.1, 0.200]),
-            'query_velocity': self.fig.add_axes([0.520+0.32, 0.080, 0.1, 0.200]),
+            'template': self.fig.add_axes([0.03, 0.865, 0.9, 0.1]),
+            'query': self.fig.add_axes([0.03, 0.7, 0.9, 0.1]),
+            'dtw': self.fig.add_axes([0, 0.15, 0.2*1.65, 0.22*1.65], projection='3d'),
+            'summary': self.fig.add_axes([0.42, 0.08, 0.25, 0.4]),
+            'template_clicks': self.fig.add_axes([0.72, 0.38, 0.1, 0.2]),
+            'template_velocity': self.fig.add_axes([0.84, 0.38, 0.1, 0.2]),
+            'query_clicks': self.fig.add_axes([0.72, 0.08, 0.1, 0.2]),
+            'query_velocity': self.fig.add_axes([0.84, 0.08, 0.1, 0.2]),
         }
         self.ax['x'] = self.fig.add_axes(
-            [0.100+0.32, 0.48, 0.25, 0.1],
+            [0.42, 0.48, 0.25, 0.1],
             sharex=self.ax['summary']
         )
         self.ax['y'] = self.fig.add_axes(
-            [0.030+0.32, 0.08, 0.07, 0.4],
+            [0.35, 0.08, 0.07, 0.4],
             sharey=self.ax['summary']
         )
         self.ax['template'].get_yaxis().set_visible(False)
@@ -116,6 +116,10 @@ class DTW:
             if event.inaxes is self.ax['query']:
                 self.query.onpress(event)
                 self.query.plot(self.ax['query'])
+            self.template.pick_start = None
+            self.template.pick_end = None
+            self.query.pick_start = None
+            self.query.pick_end = None
             self.clear_output_axes()
             self.fig.canvas.draw_idle()
 
@@ -154,11 +158,31 @@ class DTW:
         xpoint = xdata[np.argmin(dists)]
         ypoint = ydata[np.argmin(dists)]
 
-        self.template.picks.append(ypoint)
-        self.query.picks.append(xpoint)
+        if self.template.pick_start is None or self.query.pick_start is None:
+            self.template.pick_start = ypoint
+            self.query.pick_start = xpoint
+        elif self.template.pick_end is None or self.query.pick_end is None:
+            self.template.pick_end = ypoint
+            self.query.pick_end = xpoint
+            self.plot_results()
+        else:
+            dist_to_start = np.sqrt(
+                (xpoint - self.query.pick_start)**2 +
+                (ypoint - self.template.pick_start)**2
+            )
+            dist_to_end = np.sqrt(
+                (xpoint - self.query.pick_end)**2 +
+                (ypoint - self.template.pick_end)**2
+            )
+            if dist_to_start <= dist_to_end:
+                self.template.pick_start = ypoint
+                self.query.pick_start = xpoint
+            else:
+                self.template.pick_end = ypoint
+                self.query.pick_end = xpoint
+            self.plot_results()
         self.plot_summary(self.ax['x'], self.ax['y'], self.ax['summary'])
         self.highlight_summary()
-        self.plot_monte_carlo()
         self.fig.canvas.draw_idle()
 
     def onxzoom(self, axes):
@@ -210,7 +234,7 @@ class DTW:
         query_signal = self.query.picked_signal
         queryh = self.query.hilbert_abs()
         x_ax.clear()
-        x_ax.set_title('Select points of interest', y=1.25)
+        x_ax.set_title('Select 95% confidence interval', y=1.25)
         x_ax.plot(query_times, query_signal, '-', c=self.query_color, lw=2)
         x_ax.fill_between(query_times, queryh, -queryh,
                           color=ENVELOPE_COLOR, alpha=ENVELOPE_ALPHA)
@@ -274,19 +298,23 @@ class DTW:
         ax_x = self.ax['x']
         ax_y = self.ax['y']
 
-        min_, max_, mean, _ = self.query.time_picks()
+        mean, std = self.query.time_picks()
+        min_ = mean - 2 * std
+        max_ = mean + 2 * std
         ax.axvspan(min_, max_, alpha=0.4, color=self.query.color)
         ax.axvline(mean, linewidth=2, color=self.query.color)
         ax_x.axvspan(min_, max_, alpha=0.4, color=self.query.color)
         ax_x.axvline(mean, linewidth=2, color=self.query.color)
 
-        min_, max_, mean, _ = self.template.time_picks()
+        mean, std = self.template.time_picks()
+        min_ = mean - 2 * std
+        max_ = mean + 2 * std
         ax.axhspan(min_, max_, alpha=0.4, color=self.template.color)
         ax.axhline(mean, linewidth=2, color=self.template.color)
         ax_y.axhspan(min_, max_, alpha=0.4, color=self.template.color)
         ax_y.axhline(mean, linewidth=2, color=self.template.color)
 
-    def plot_monte_carlo(self):
+    def plot_results(self):
         """plot the Monte Carlo distributions"""
         self.template.plot_clicks(self.ax['template_clicks'])
         self.template.plot_velocity(self.ax['template_velocity'])
@@ -316,7 +344,8 @@ class Signal:
         self.start = self.times[len(self.times) // 2]
         self.finish = self.times[len(self.times) // 2 + 1]
         self.pressed = False
-        self.picks = []
+        self.pick_start = None
+        self.pick_end = None
         self.picked_times, self.picked_signal = self.get_picked_data()
         self.velocity = None
         self.time = None
@@ -324,7 +353,6 @@ class Signal:
     def onpress(self, event):
         """mouse button pressed"""
         self.pressed = True
-        self.picks = []
         self.move_line(event)
 
     def onrelease(self, event):
@@ -362,19 +390,16 @@ class Signal:
         """plot click histogram"""
         ax.clear()
         ax.set_title('time picks')
-        min_, max_, mean, std = self.time_picks()
-        range_ = np.linspace(min_ - 2 * std, max_ + 2 * std, 50)
+        mean, std = self.time_picks()
+        range_ = np.linspace(mean - 2 * std, mean + 2 * std, 50)
         norm_ = norm.pdf(range_, mean, std)
-        ax.hist(np.array(self.picks), normed=True, color=self.color, alpha=0.6)
         ax.plot(range_, norm_, '--', c=self.color, lw=2)
-        ax.set_title('Time ({} clicks)\n{:5g}±{:5g}'.format(
-            len(self.picks), mean, std))
+        ax.set_title('Time\n{:5g}±{:5g}'.format(mean, std))
         ax.set_xlabel(r'$\mu$s')
 
     def plot_velocity(self, ax):
         """plot velocity distribution"""
-        time_mean, time_std = self.time_picks()[2:]
-        distance = self.length
+        time_mean, time_std = self.time_picks()
         self.time = time_mean if time_std == 0.0 else uncertainties.ufloat(
             time_mean, time_std)
         self.velocity = (self.length / self.time) * 1e4
@@ -407,9 +432,10 @@ class Signal:
 
     def time_picks(self):
         """return picked time data"""
-        if self.picks:
-            time_picks = np.array(self.picks)
-            if len(time_picks) == 1:
-                return time_picks[0], time_picks[0], time_picks[0], 1e-50
-            return np.min(time_picks), np.max(time_picks), np.mean(time_picks), np.std(time_picks)
-        return -1, 1, 0, 0.25
+        if self.pick_start:
+            if self.pick_end:
+                two_std = abs(self.pick_end - self.pick_start) / 2
+                mean = min(self.pick_start, self.pick_end) + two_std
+                return mean, two_std / 2
+            return self.pick_start, 0
+        return 0, 0
