@@ -1,10 +1,10 @@
 """Poropyck setup file"""
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='poropyck',
-    version='1.5.0',
+    version='1.6.0',
     author='Paul Freeman',
     author_email='paul.freeman.cs@gmail.com',
-    packages=['poropyck']
+    packages=find_packages()
 )

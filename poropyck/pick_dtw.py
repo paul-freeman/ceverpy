@@ -13,7 +13,7 @@ HIGHLIGHT_COLOR = 'thistle'
 ENVELOPE_COLOR = 'lightpink'
 ENVELOPE_ALPHA = 0.4
 PATH_COLOR = 'black'
-MINIMUM_UNCERTAINTY = 1e-50
+SKIP_ROWS_IN_CSV = 21
 
 
 class DTW:
@@ -31,18 +31,20 @@ class DTW:
         length_mean = np.mean(length_data)
         length_std = np.std(length_data)
         self.length = (
-            uncertainties.ufloat(length_mean, MINIMUM_UNCERTAINTY) if length_std == 0.0
+            length_mean if length_std == 0.0
             else uncertainties.ufloat(length_mean, length_std)
         )
         self.template = Signal(
-            np.loadtxt(template_path, delimiter=',', skiprows=21).T[:2],
+            np.loadtxt(template_path, delimiter=',',
+                       skiprows=SKIP_ROWS_IN_CSV).T[:2],
             self.length,
             color=template_color,
             window_start=template_start,
             window_end=template_end
         )
         self.query = Signal(
-            np.loadtxt(query_path, delimiter=',', skiprows=21).T[:2],
+            np.loadtxt(query_path, delimiter=',',
+                       skiprows=SKIP_ROWS_IN_CSV).T[:2],
             self.length,
             color=query_color,
             window_start=query_start,
@@ -68,13 +70,19 @@ class DTW:
             'y': self.fig.add_axes([0.35, 0.08, 0.07, 0.4]),
             'template_clicks': self.fig.add_axes([0.72, 0.38, 0.1, 0.2]),
             'template_velocity': self.fig.add_axes([0.84, 0.38, 0.1, 0.2]),
-            'query_clicks': self.fig.add_axes([0.72, 0.08, 0.1, 0.2]),
-            'query_velocity': self.fig.add_axes([0.84, 0.08, 0.1, 0.2]),
         }
         self.ax['summary'] = self.fig.add_axes(
             [0.42, 0.08, 0.25, 0.4],
             sharex=self.ax['x'],
             sharey=self.ax['y']
+        )
+        self.ax['query_clicks'] = self.fig.add_axes(
+            [0.72, 0.08, 0.1, 0.2],
+            sharex=self.ax['template_clicks']
+        )
+        self.ax['query_velocity'] = self.fig.add_axes(
+            [0.84, 0.08, 0.1, 0.2],
+            sharex=self.ax['template_velocity']
         )
         self.ax['template'].get_yaxis().set_visible(False)
         self.ax['query'].get_yaxis().set_visible(False)
@@ -106,22 +114,20 @@ class DTW:
             'file': self.query_path,
             'window_start': self.query.pick_start,
             'window_end': self.query.pick_end,
-            'distance': self.length.n,
-            'distance_error': self.length.s,
-            'time': self.query.time.n,
-            'time_error': self.query.time.s,
-            'velocity': self.query.velocity.n,
-            'velocity_error': self.query.velocity.s,
+            'distance': get_mean(self.length),
+            'distance_error': get_std(self.length),
+            'time': get_mean(self.query.time),
+            'time_error': get_std(self.query.time),
+            'velocity': get_mean(self.query.velocity),
+            'velocity_error': get_std(self.query.velocity),
             'template': {
                 'file': self.template_path,
                 'window_start': self.template.pick_start,
                 'window_end': self.template.pick_end,
-                'distance': self.length.n,
-                'distance_error': self.length.s,
-                'time': self.template.time.n,
-                'time_error': self.template.time.s,
-                'velocity': self.template.velocity.n,
-                'velocity_error': self.template.velocity.s
+                'time': get_mean(self.template.time),
+                'time_error': get_std(self.template.time),
+                'velocity': get_mean(self.template.velocity),
+                'velocity_error': get_std(self.template.velocity)
             }
         }
 
@@ -251,7 +257,12 @@ class DTW:
         query_signal = self.query.picked_signal
         queryh = self.query.hilbert_abs()
         x_ax.clear()
-        x_ax.set_title('Select 95% confidence interval', y=1.25)
+        x_ax.set_title(
+            ('1 click for certain time or\n' +
+             '2 clicks for 95% confidence interval\n' +
+             'Close window when complete'),
+            y=1.25
+        )
         x_ax.plot(query_times, query_signal, '-', c=self.query_color, lw=2)
         x_ax.fill_between(query_times, queryh, -queryh,
                           color=ENVELOPE_COLOR, alpha=ENVELOPE_ALPHA)
@@ -338,9 +349,9 @@ class DTW:
 
     def plot_results(self):
         """plot the Monte Carlo distributions"""
-        self.template.plot_clicks(self.ax['template_clicks'])
+        self.template.plot_time(self.ax['template_clicks'])
         self.template.plot_velocity(self.ax['template_velocity'])
-        self.query.plot_clicks(self.ax['query_clicks'])
+        self.query.plot_time(self.ax['query_clicks'])
         self.query.plot_velocity(self.ax['query_velocity'])
 
     def clear_output_axes(self):
@@ -359,8 +370,7 @@ class Signal:
     """one signal to be compared"""
 
     def __init__(self, data, length, color='blue', window_start=None, window_end=None):
-        secs, self.signal = data
-        self.times = secs * 1e6
+        self.times, self.signal = data
         self.length = length
         self.color = color
         self.start = window_start
@@ -412,29 +422,32 @@ class Signal:
         ax.axvspan(self.start, self.finish, alpha=0.4, color=self.color)
         ax.plot(self.times, self.signal, color=self.color)
 
-    def plot_clicks(self, ax):
-        """plot click histogram"""
+    def plot_time(self, ax):
+        """plot time distribution"""
         ax.clear()
         ax.set_title('time picks')
         mean, std = self.time_picks()
+        ax.set_title('Time\n{:5g}'.format(mean))
         if std != 0.0:
             range_ = np.linspace(mean - 2 * std, mean + 2 * std, 50)
             norm_ = norm.pdf(range_, mean, std)
             ax.plot(range_, norm_, '--', c=self.color, lw=2)
-        ax.set_title('Time\n{:5g}±{:5g}'.format(mean, std))
+            ax.set_title('Time\n{:5g}±{:5g}'.format(mean, std))
         ax.set_xlabel(r'$\mu$s')
 
     def plot_velocity(self, ax):
         """plot velocity distribution"""
         time_mean, time_std = self.time_picks()
         self.time = (
-            uncertainties.ufloat(time_mean, MINIMUM_UNCERTAINTY) if time_std == 0.0
+            time_mean if time_std == 0.0
             else uncertainties.ufloat(time_mean, time_std)
         )
         self.velocity = (self.length / self.time) * 1e4
         ax.clear()
         plt.sca(ax)
-        if isinstance(self.velocity, uncertainties.core.AffineScalarFunc):
+        if isinstance(self.velocity, float):
+            ax.set_title('Velocity\n{:5g}'.format(self.velocity))
+        else:
             x = np.linspace(
                 norm.ppf(0.01, self.velocity.n, self.velocity.s),
                 norm.ppf(0.99, self.velocity.n, self.velocity.s),
@@ -444,11 +457,6 @@ class Signal:
                     color=self.color, lw=2, ls='dashed')
             ax.set_title('Velocity\n{:5g}±{:5g}'.format(
                 self.velocity.n, self.velocity.s))
-        else:
-            self.velocity.plot(color=self.color, lw=2, ls='dashed')
-            self.velocity.plot(hist=True, color=self.color, alpha=0.6)
-            ax.set_title('Velocity\n{:5g}±{:5g}'.format(
-                self.velocity.mean, self.velocity.std))
         ax.set_xlabel('m/s')
 
     def hilbert_angle(self):
@@ -466,5 +474,17 @@ class Signal:
                 two_std = abs(self.pick_end - self.pick_start) / 2
                 mean = min(self.pick_start, self.pick_end) + two_std
                 return mean, two_std / 2
-            return self.pick_start, MINIMUM_UNCERTAINTY
-        return 0, MINIMUM_UNCERTAINTY
+            return self.pick_start, 0.0
+        return 0.0, 0.0
+
+
+def get_mean(x):
+    if isinstance(x, float):
+        return x
+    return x.n
+
+
+def get_std(x):
+    if isinstance(x, float):
+        return 0.0
+    return x.s
