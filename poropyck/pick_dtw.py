@@ -13,31 +13,40 @@ HIGHLIGHT_COLOR = 'thistle'
 ENVELOPE_COLOR = 'lightpink'
 ENVELOPE_ALPHA = 0.4
 PATH_COLOR = 'black'
+MINIMUM_UNCERTAINTY = 1e-50
 
 
 class DTW:
     """compare using dynamic time warping"""
 
-    def __init__(self, template_path, query_path, length_data, template_color='tan', query_color='blue'):
+    def __init__(self, template_path, query_path, length_data,
+                 template_color='tan', template_start=None, template_end=None,
+                 query_color='blue', query_start=None, query_end=None):
         self.fig = None
         self.ax = None
+        self.template_path = template_path
+        self.query_path = query_path
         self.template_color = template_color
         self.query_color = query_color
         length_mean = np.mean(length_data)
         length_std = np.std(length_data)
         self.length = (
-            length_mean if length_std == 0.0
+            uncertainties.ufloat(length_mean, MINIMUM_UNCERTAINTY) if length_std == 0.0
             else uncertainties.ufloat(length_mean, length_std)
         )
         self.template = Signal(
             np.loadtxt(template_path, delimiter=',', skiprows=21).T[:2],
             self.length,
-            color=template_color
+            color=template_color,
+            window_start=template_start,
+            window_end=template_end
         )
         self.query = Signal(
             np.loadtxt(query_path, delimiter=',', skiprows=21).T[:2],
             self.length,
-            color=query_color
+            color=query_color,
+            window_start=query_start,
+            window_end=query_end
         )
         self.indices1 = None
         self.indices1a = None
@@ -55,19 +64,17 @@ class DTW:
             'template': self.fig.add_axes([0.03, 0.865, 0.9, 0.1]),
             'query': self.fig.add_axes([0.03, 0.7, 0.9, 0.1]),
             'dtw': self.fig.add_axes([0, 0.15, 0.2*1.65, 0.22*1.65], projection='3d'),
-            'summary': self.fig.add_axes([0.42, 0.08, 0.25, 0.4]),
+            'x': self.fig.add_axes([0.42, 0.48, 0.25, 0.1]),
+            'y': self.fig.add_axes([0.35, 0.08, 0.07, 0.4]),
             'template_clicks': self.fig.add_axes([0.72, 0.38, 0.1, 0.2]),
             'template_velocity': self.fig.add_axes([0.84, 0.38, 0.1, 0.2]),
             'query_clicks': self.fig.add_axes([0.72, 0.08, 0.1, 0.2]),
             'query_velocity': self.fig.add_axes([0.84, 0.08, 0.1, 0.2]),
         }
-        self.ax['x'] = self.fig.add_axes(
-            [0.42, 0.48, 0.25, 0.1],
-            sharex=self.ax['summary']
-        )
-        self.ax['y'] = self.fig.add_axes(
-            [0.35, 0.08, 0.07, 0.4],
-            sharey=self.ax['summary']
+        self.ax['summary'] = self.fig.add_axes(
+            [0.42, 0.08, 0.25, 0.4],
+            sharex=self.ax['x'],
+            sharey=self.ax['y']
         )
         self.ax['template'].get_yaxis().set_visible(False)
         self.ax['query'].get_yaxis().set_visible(False)
@@ -95,17 +102,28 @@ class DTW:
         self.template.plot(self.ax['template'])
         self.query.plot(self.ax['query'])
         plt.show()
-        template_data = {
-            'distance': self.length,
-            'time': self.template.time,
-            'velocity': self.template.velocity
+        return {
+            'file': self.query_path,
+            'window_start': self.query.pick_start,
+            'window_end': self.query.pick_end,
+            'distance': self.length.n,
+            'distance_error': self.length.s,
+            'time': self.query.time.n,
+            'time_error': self.query.time.s,
+            'velocity': self.query.velocity.n,
+            'velocity_error': self.query.velocity.s,
+            'template': {
+                'file': self.template_path,
+                'window_start': self.template.pick_start,
+                'window_end': self.template.pick_end,
+                'distance': self.length.n,
+                'distance_error': self.length.s,
+                'time': self.template.time.n,
+                'time_error': self.template.time.s,
+                'velocity': self.template.velocity.n,
+                'velocity_error': self.template.velocity.s
+            }
         }
-        query_data = {
-            'distance': self.length,
-            'time': self.query.time,
-            'velocity': self.query.velocity
-        }
-        return template_data, query_data
 
     def onpress(self, event):
         """mouse button pressed"""
@@ -164,7 +182,6 @@ class DTW:
         elif self.template.pick_end is None or self.query.pick_end is None:
             self.template.pick_end = ypoint
             self.query.pick_end = xpoint
-            self.plot_results()
         else:
             dist_to_start = np.sqrt(
                 (xpoint - self.query.pick_start)**2 +
@@ -180,9 +197,9 @@ class DTW:
             else:
                 self.template.pick_end = ypoint
                 self.query.pick_end = xpoint
-            self.plot_results()
         self.plot_summary(self.ax['x'], self.ax['y'], self.ax['summary'])
         self.highlight_summary()
+        self.plot_results()
         self.fig.canvas.draw_idle()
 
     def onxzoom(self, axes):
@@ -244,7 +261,7 @@ class DTW:
         except TypeError:
             x_ax.set_ylim(-1, 1)
         x_ax.grid(True, axis='x', color='lightgrey')
-        y_ax.tick_params(axis='x', which='major')
+        x_ax.tick_params(axis='x', which='major')
 
         template_times = self.template.picked_times
         template_signal = self.template.picked_signal
@@ -271,7 +288,6 @@ class DTW:
         idxqoh = np.take(query_times, self.indices1h.astype(int) - 1)
 
         summary_ax.clear()
-        summary_ax.axis('equal')
         summary_ax.fill_between(idxqoh, idxtoh, idxqoh,
                                 color=ENVELOPE_COLOR, alpha=ENVELOPE_ALPHA)
         summary_ax.fill_betweenx(idxqoh, idxtoh, idxqoh,
@@ -289,8 +305,14 @@ class DTW:
         summary_ax.callbacks.connect('xlim_changed', self.onxzoom)
         summary_ax.callbacks.connect('ylim_changed', self.onyzoom)
 
-        x_ax.set_xlim(summary_ax.get_xlim())
-        y_ax.set_ylim(summary_ax.get_ylim())
+        x_ax.set_xlim(
+            min(summary_ax.get_xlim()[0], summary_ax.get_ylim()[0]),
+            max(summary_ax.get_xlim()[1], summary_ax.get_ylim()[1])
+        )
+        y_ax.set_ylim(
+            min(summary_ax.get_xlim()[0], summary_ax.get_ylim()[0]),
+            max(summary_ax.get_xlim()[1], summary_ax.get_ylim()[1])
+        )
 
     def highlight_summary(self):
         """highlight summary plot after points are picked"""
@@ -336,13 +358,17 @@ class DTW:
 class Signal:
     """one signal to be compared"""
 
-    def __init__(self, data, length, color='blue'):
+    def __init__(self, data, length, color='blue', window_start=None, window_end=None):
         secs, self.signal = data
         self.times = secs * 1e6
         self.length = length
         self.color = color
-        self.start = self.times[len(self.times) // 2]
-        self.finish = self.times[len(self.times) // 2 + 1]
+        self.start = window_start
+        self.finish = window_end
+        if not self.start:
+            self.start = self.times[len(self.times) // 2]
+        if not self.finish:
+            self.finish = self.times[len(self.times) // 2 + 1]
         self.pressed = False
         self.pick_start = None
         self.pick_end = None
@@ -391,17 +417,20 @@ class Signal:
         ax.clear()
         ax.set_title('time picks')
         mean, std = self.time_picks()
-        range_ = np.linspace(mean - 2 * std, mean + 2 * std, 50)
-        norm_ = norm.pdf(range_, mean, std)
-        ax.plot(range_, norm_, '--', c=self.color, lw=2)
+        if std != 0.0:
+            range_ = np.linspace(mean - 2 * std, mean + 2 * std, 50)
+            norm_ = norm.pdf(range_, mean, std)
+            ax.plot(range_, norm_, '--', c=self.color, lw=2)
         ax.set_title('Time\n{:5g}±{:5g}'.format(mean, std))
         ax.set_xlabel(r'$\mu$s')
 
     def plot_velocity(self, ax):
         """plot velocity distribution"""
         time_mean, time_std = self.time_picks()
-        self.time = time_mean if time_std == 0.0 else uncertainties.ufloat(
-            time_mean, time_std)
+        self.time = (
+            uncertainties.ufloat(time_mean, MINIMUM_UNCERTAINTY) if time_std == 0.0
+            else uncertainties.ufloat(time_mean, time_std)
+        )
         self.velocity = (self.length / self.time) * 1e4
         ax.clear()
         plt.sca(ax)
@@ -437,5 +466,5 @@ class Signal:
                 two_std = abs(self.pick_end - self.pick_start) / 2
                 mean = min(self.pick_start, self.pick_end) + two_std
                 return mean, two_std / 2
-            return self.pick_start, 0
-        return 0, 0
+            return self.pick_start, MINIMUM_UNCERTAINTY
+        return 0, MINIMUM_UNCERTAINTY

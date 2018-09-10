@@ -12,9 +12,8 @@ build:
 requirements:
     build:
         - python
-        - dtw >=1.0.2
         - uncertainties
-        - matplotlib <2.2
+        - matplotlib
         - numpy
         - scipy
         - pyyaml
@@ -22,18 +21,16 @@ requirements:
 
     run:
         - python
-        - dtw >=1.0.2
         - uncertainties
-        - matplotlib <2.2
+        - matplotlib
         - numpy
         - scipy
 
 test:
     requires:
         - python
-        - dtw >=1.0.2
         - uncertainties
-        - matplotlib <2.2
+        - matplotlib
         - numpy
         - scipy
     import:

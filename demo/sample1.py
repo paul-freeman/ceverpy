@@ -6,7 +6,6 @@ dry_data = 'NM11_2087_4A_dry.csv'
 sat_data = 'NM11_2087_4A_sat.csv'
 
 dtw = poropyck.DTW(dry_data, sat_data, lengths)
-dry, sat = dtw.pick()
+results = dtw.pick()
 
-print('Dry:\n', dry)
-print('Sat:\n', sat)
+print(results)

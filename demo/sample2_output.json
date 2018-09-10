@@ -1,0 +1,205 @@
+{
+  "lengths": [
+    5.256,
+    5.25,
+    5.254,
+    5.254,
+    5.252,
+    5.252,
+    5.258,
+    5.265,
+    5.255,
+    5.252
+  ],
+  "wave_type": "P",
+  "waves": [
+    {
+      "file": "NM8A-2087-4B_8000_PP_sat500_u1.csv",
+      "pressure": 8000
+    },
+    {
+      "file": "NM8A-2087-4B_7000_PP_sat500_u1.csv",
+      "pressure": 7000
+    },
+    {
+      "file": "NM8A-2087-4B_6000_PP_sat500_u1.csv",
+      "pressure": 6000
+    },
+    {
+      "file": "NM8A-2087-4B_5000_PP_sat500_u1.csv",
+      "pressure": 5000
+    },
+    {
+      "file": "NM8A-2087-4B_4000_PP_sat500_u1.csv",
+      "pressure": 4000
+    },
+    {
+      "file": "NM8A-2087-4B_3000_PP_sat500_u1.csv",
+      "pressure": 3000
+    },
+    {
+      "file": "NM8A-2087-4B_2000_PP_sat500_u1.csv",
+      "pressure": 2000
+    },
+    {
+      "file": "NM8A-2087-4B_1000_PP_sat500_u1.csv",
+      "pressure": 1000
+    }
+  ],
+  "picks": [
+    {
+      "file": "NM8A-2087-4B_7000_PP_sat500_u1.csv",
+      "window_start": 12097050.43,
+      "window_end": 13209161.639999999,
+      "distance": 5.2548,
+      "distance_error": 0.004044749683231326,
+      "time": 12653106.035,
+      "time_error": 278027.80249999976,
+      "velocity": 0.004152972389122953,
+      "velocity_error": 9.130959715479012e-05,
+      "template": {
+        "file": "NM8A-2087-4B_8000_PP_sat500_u1.csv",
+        "window_start": 12003391.459999999,
+        "window_end": 13187509.87,
+        "distance": 5.2548,
+        "distance_error": 0.004044749683231326,
+        "time": 12595450.665,
+        "time_error": 296029.60250000004,
+        "velocity": 0.004171982519531389,
+        "velocity_error": 9.810625392993638e-05
+      }
+    },
+    {
+      "file": "NM8A-2087-4B_6000_PP_sat500_u1.csv",
+      "window_start": 12071488.67,
+      "window_end": 13282809.8,
+      "distance": 5.2548,
+      "distance_error": 0.004044749683231326,
+      "time": 12677149.235,
+      "time_error": 302830.2825000002,
+      "velocity": 0.004145095953822303,
+      "velocity_error": 9.906896604784545e-05,
+      "template": {
+        "file": "NM8A-2087-4B_7000_PP_sat500_u1.csv",
+        "window_start": 12112251.95,
+        "window_end": 13280368.76,
+        "distance": 5.2548,
+        "distance_error": 0.004044749683231326,
+        "time": 12696310.355,
+        "time_error": 292029.20250000013,
+        "velocity": 0.0041388402244992226,
+        "velocity_error": 9.525120040098709e-05
+      }
+    },
+    {
+      "file": "NM8A-2087-4B_5000_PP_sat500_u1.csv",
+      "window_start": 12338646.98,
+      "window_end": 13411554.280000001,
+      "distance": 5.2548,
+      "distance_error": 0.004044749683231326,
+      "time": 12875100.63,
+      "time_error": 268226.8250000002,
+      "velocity": 0.004081366158611531,
+      "velocity_error": 8.508507063016379e-05,
+      "template": {
+        "file": "NM8A-2087-4B_6000_PP_sat500_u1.csv",
+        "window_start": 12237105.229999999,
+        "window_end": 13391620.680000002,
+        "distance": 5.2548,
+        "distance_error": 0.004044749683231326,
+        "time": 12814362.955,
+        "time_error": 288628.86250000075,
+        "velocity": 0.0041007110680829,
+        "velocity_error": 9.24177421049264e-05
+      }
+    },
+    {
+      "file": "NM8A-2087-4B_4000_PP_sat500_u1.csv",
+      "window_start": 12532223.94,
+      "window_end": 13592329.95,
+      "distance": 5.2548,
+      "distance_error": 0.004044749683231326,
+      "time": 13062276.945,
+      "time_error": 265026.50249999994,
+      "velocity": 0.004022882091786794,
+      "velocity_error": 8.168080736360339e-05,
+      "template": {
+        "file": "NM8A-2087-4B_5000_PP_sat500_u1.csv",
+        "window_start": 12433856.51,
+        "window_end": 13526765.799999999,
+        "distance": 5.2548,
+        "distance_error": 0.004044749683231326,
+        "time": 12980311.155,
+        "time_error": 273227.3224999998,
+        "velocity": 0.004048285081344801,
+        "velocity_error": 8.527078951506203e-05
+      }
+    },
+    {
+      "file": "NM8A-2087-4B_3000_PP_sat500_u1.csv",
+      "window_start": 12734690.069999998,
+      "window_end": 13808797.48,
+      "distance": 5.2548,
+      "distance_error": 0.004044749683231326,
+      "time": 13271743.774999999,
+      "time_error": 268526.8525000005,
+      "velocity": 0.003959389277766554,
+      "velocity_error": 8.016817188625957e-05,
+      "template": {
+        "file": "NM8A-2087-4B_4000_PP_sat500_u1.csv",
+        "window_start": 12574628.18,
+        "window_end": 13745945.31,
+        "distance": 5.2548,
+        "distance_error": 0.004044749683231326,
+        "time": 13160286.745000001,
+        "time_error": 292829.2825000002,
+        "velocity": 0.003992922116227035,
+        "velocity_error": 8.889957558739713e-05
+      }
+    },
+    {
+      "file": "NM8A-2087-4B_2000_PP_sat500_u1.csv",
+      "window_start": 13058656.07,
+      "window_end": 14124762.68,
+      "distance": 5.2548,
+      "distance_error": 0.004044749683231326,
+      "time": 13591709.375,
+      "time_error": 266526.65249999985,
+      "velocity": 0.0038661803714442654,
+      "velocity_error": 7.587225520517487e-05,
+      "template": {
+        "file": "NM8A-2087-4B_3000_PP_sat500_u1.csv",
+        "window_start": 12896706.27,
+        "window_end": 13984815.08,
+        "distance": 5.2548,
+        "distance_error": 0.004044749683231326,
+        "time": 13440760.675,
+        "time_error": 272027.20250000013,
+        "velocity": 0.003909600153638626,
+        "velocity_error": 7.918349907513162e-05
+      }
+    },
+    {
+      "file": "NM8A-2087-4B_1000_PP_sat500_u1.csv",
+      "window_start": 13564618.66,
+      "window_end": 14482710.47,
+      "distance": 5.2548,
+      "distance_error": 0.004044749683231326,
+      "time": 14023664.565000001,
+      "time_error": 229522.95250000013,
+      "velocity": 0.003747094759464535,
+      "velocity_error": 6.139585249034502e-05,
+      "template": {
+        "file": "NM8A-2087-4B_2000_PP_sat500_u1.csv",
+        "window_start": 13388689.07,
+        "window_end": 14336783.88,
+        "distance": 5.2548,
+        "distance_error": 0.004044749683231326,
+        "time": 13862736.475000001,
+        "time_error": 237023.70250000013,
+        "velocity": 0.00379059358841343,
+        "velocity_error": 6.487683827949938e-05
+      }
+    }
+  ]
+}

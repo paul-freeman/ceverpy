@@ -1,0 +1,49 @@
+{
+  "lengths": [
+    5.256,
+    5.25,
+    5.254,
+    5.254,
+    5.252,
+    5.252,
+    5.258,
+    5.265,
+    5.255,
+    5.252
+  ],
+  "wave_type": "P",
+  "waves": [
+    {
+      "file": "NM8A-2087-4B_8000_PP_sat500_u1.csv",
+      "pressure": 8000
+    },
+    {
+      "file": "NM8A-2087-4B_7000_PP_sat500_u1.csv",
+      "pressure": 7000
+    },
+    {
+      "file": "NM8A-2087-4B_6000_PP_sat500_u1.csv",
+      "pressure": 6000
+    },
+    {
+      "file": "NM8A-2087-4B_5000_PP_sat500_u1.csv",
+      "pressure": 5000
+    },
+    {
+      "file": "NM8A-2087-4B_4000_PP_sat500_u1.csv",
+      "pressure": 4000
+    },
+    {
+      "file": "NM8A-2087-4B_3000_PP_sat500_u1.csv",
+      "pressure": 3000
+    },
+    {
+      "file": "NM8A-2087-4B_2000_PP_sat500_u1.csv",
+      "pressure": 2000
+    },
+    {
+      "file": "NM8A-2087-4B_1000_PP_sat500_u1.csv",
+      "pressure": 1000
+    }
+  ]
+}
