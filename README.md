@@ -103,40 +103,42 @@ provided in the GitHub repository.
 
 The following code sample demonstrates the basic usage:
 
-    import poropyck
+```python
+import poropyck
 
-    lengths = [5.256, 5.25, 5.254, 5.254, 5.252, 5.252, 5.258, 5.265, 5.255, 5.252]
-    template = 'NM11_2087_4A_dry.csv'
-    query = 'NM11_2087_4A_sat.csv'
+lengths = [5.256, 5.25, 5.254, 5.254, 5.252, 5.252, 5.258, 5.265, 5.255, 5.252]
+template = 'NM11_2087_4A_dry.csv'
+query = 'NM11_2087_4A_sat.csv'
 
-    dtw = poropyck.DTW(template, query, lengths)
-    query_results = dtw.pick()
+dtw = poropyck.DTW(template, query, lengths)
+query_results = dtw.pick()
+```
 
 The ``query_results`` variable is a dictionary and will contain many values
 describing the user picks. It will look something like this:
 
-    {
-        "file": "NM11_2087_4A_sat.csv",
-        "window_start": 14.07,
-        "window_end": 15.9,
-        "distance": 5.2548,
-        "distance_error": 0.004044749683231326,
-        "time": 14.985,
-        "time_error": 0.4575,
-        "velocity": 3506.706706706707,
-        "velocity_error": 107.0956363829241,
-        "template": {
-            "file": "NM11_2087_4A_dry.csv",
-            "window_start": 14.836,
-            "window_end": 16.64,
-            "time": 15.738,
-            "time_error": 0.45100000000000007,
-            "velocity": 3338.9248951582163,
-            "velocity_error": 95.71726030753038
-        }
+```json
+{
+    "file": "NM11_2087_4A_sat.csv",
+    "window_start": 14.07,
+    "window_end": 15.9,
+    "distance": 5.2548,
+    "distance_error": 0.004044749683231326,
+    "time": 14.985,
+    "time_error": 0.4575,
+    "velocity": 3506.706706706707,
+    "velocity_error": 107.0956363829241,
+    "template": {
+        "file": "NM11_2087_4A_dry.csv",
+        "window_start": 14.836,
+        "window_end": 16.64,
+        "time": 15.738,
+        "time_error": 0.45100000000000007,
+        "velocity": 3338.9248951582163,
+        "velocity_error": 95.71726030753038
     }
-
-
+}
+```
 
 The template picks are included for reference (and in case the picks need to be repeated).
 
@@ -144,89 +146,93 @@ The template picks are included for reference (and in case the picks need to be 
 
 Here is a longer example showing how you might construct a script to loop over many files:
 
-    import json
-    import matplotlib.pyplot as plt
-    import poropyck
+```python
+import json
+import matplotlib.pyplot as plt
+import poropyck
 
-    # read input from JSON
-    with open('sample2_input.json') as jsonfile:
-        data = json.load(jsonfile)
+# read input from JSON
+with open('sample2_input.json') as jsonfile:
+    data = json.load(jsonfile)
 
-    # put files into (template, query) tuples for DTW
-    templates = data['waves'][:-1]  # last file is never used as template
-    queries = data['waves'][1:]  # first file is never used as query
-    picks = zip(templates, queries)
+# put files into (template, query) tuples for DTW
+templates = data['waves'][:-1]  # last file is never used as template
+queries = data['waves'][1:]  # first file is never used as query
+picks = zip(templates, queries)
 
-    # loop over each (template, query) tuple
-    data['picks'] = []
-    for template, query in picks:
-        # run poropyck
-        dtw = poropyck.DTW(template['file'], query['file'], data['lengths'])
-        data['picks'].append(dtw.pick())
+# loop over each (template, query) tuple
+data['picks'] = []
+for template, query in picks:
+    # run poropyck
+    dtw = poropyck.DTW(template['file'], query['file'], data['lengths'])
+    data['picks'].append(dtw.pick())
 
-    # write output to JSON
-    with open('sample2_output.json', 'w') as jsonfile:
-        json.dump(data, jsonfile, indent=2)
+# write output to JSON
+with open('sample2_output.json', 'w') as jsonfile:
+    json.dump(data, jsonfile, indent=2)
 
-    # plot velocities with error
-    plt.errorbar(
-        [pick['velocity'] for pick in data['picks']],
-        [w['pressure'] for w in data['waves'][1:]],
-        xerr=[pick['velocity_error'] for pick in data['picks']]
-    )
-    plt.show()
+# plot velocities with error
+plt.errorbar(
+    [pick['velocity'] for pick in data['picks']],
+    [w['pressure'] for w in data['waves'][1:]],
+    xerr=[pick['velocity_error'] for pick in data['picks']]
+)
+plt.show()
+```
 
 The sample JSON file used for input in this example would look like this:
 
+```json
+{
+"lengths": [
+    5.256,
+    5.25,
+    5.254,
+    5.254,
+    5.252,
+    5.252,
+    5.258,
+    5.265,
+    5.255,
+    5.252
+],
+"wave_type": "P",
+"waves": [
     {
-    "lengths": [
-        5.256,
-        5.25,
-        5.254,
-        5.254,
-        5.252,
-        5.252,
-        5.258,
-        5.265,
-        5.255,
-        5.252
-    ],
-    "wave_type": "P",
-    "waves": [
-        {
-        "file": "NM8A-2087-4B_8000_PP_sat500_u1.csv",
-        "pressure": 8000
-        },
-        {
-        "file": "NM8A-2087-4B_7000_PP_sat500_u1.csv",
-        "pressure": 7000
-        },
-        {
-        "file": "NM8A-2087-4B_6000_PP_sat500_u1.csv",
-        "pressure": 6000
-        },
-        {
-        "file": "NM8A-2087-4B_5000_PP_sat500_u1.csv",
-        "pressure": 5000
-        },
-        {
-        "file": "NM8A-2087-4B_4000_PP_sat500_u1.csv",
-        "pressure": 4000
-        },
-        {
-        "file": "NM8A-2087-4B_3000_PP_sat500_u1.csv",
-        "pressure": 3000
-        },
-        {
-        "file": "NM8A-2087-4B_2000_PP_sat500_u1.csv",
-        "pressure": 2000
-        },
-        {
-        "file": "NM8A-2087-4B_1000_PP_sat500_u1.csv",
-        "pressure": 1000
-        }
-    ]
+    "file": "NM8A-2087-4B_8000_PP_sat500_u1.csv",
+    "pressure": 8000
+    },
+    {
+    "file": "NM8A-2087-4B_7000_PP_sat500_u1.csv",
+    "pressure": 7000
+    },
+    {
+    "file": "NM8A-2087-4B_6000_PP_sat500_u1.csv",
+    "pressure": 6000
+    },
+    {
+    "file": "NM8A-2087-4B_5000_PP_sat500_u1.csv",
+    "pressure": 5000
+    },
+    {
+    "file": "NM8A-2087-4B_4000_PP_sat500_u1.csv",
+    "pressure": 4000
+    },
+    {
+    "file": "NM8A-2087-4B_3000_PP_sat500_u1.csv",
+    "pressure": 3000
+    },
+    {
+    "file": "NM8A-2087-4B_2000_PP_sat500_u1.csv",
+    "pressure": 2000
+    },
+    {
+    "file": "NM8A-2087-4B_1000_PP_sat500_u1.csv",
+    "pressure": 1000
     }
+]
+}
+```
 
 Obviously your needs may differ from this example, but if you are unfamiliar
 with Python programming, this should get you started.
