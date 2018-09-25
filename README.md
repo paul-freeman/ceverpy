@@ -101,7 +101,8 @@ provided in the GitHub repository.
 
 ### Basic use
 
-The following code sample demonstrates the basic usage:
+The following code sample demonstrates the basic usage (these files can
+also be found in the ``demo`` directory):
 
 ```python
 import poropyck
