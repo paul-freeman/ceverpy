@@ -47,6 +47,8 @@ you have the ``uncertainties`` package installeds, as well as some standards:
 If the other option do no suit your needs, the package source is available on
 GitHub.
 
+    git clone https://github.com/paul-freeman/poropyck.git
+
 Installation should be possible using the included ``setup.py`` script:
 
     python setup.py install
@@ -63,6 +65,19 @@ For reference, the following is a list of packages used during development:
 
 This is not to say that these package versions are required, but if you
 encounter problems, this may be a place to start your search.
+
+If you would like to make changes to the code, you should install it in
+development mode, using
+
+    python setup.py develop
+    
+This will install it such that it uses the code in your poropyck folder
+instead of looking in the conda or pip installation directory.
+
+When you are done changing the code, you should upload (push) it to
+Github. Then you can stope development mode using
+
+    python setup.py develop --uninstall
 
 ## Input data
 
