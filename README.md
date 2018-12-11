@@ -5,24 +5,36 @@
 * ``poropyck`` now proposes a pick location using an AIC calculation, although
   this can obviously be adjusted by the user
 
-## Installation
+## Prerequisite
 
-### Prerequisite
-
-#### Uncertainties
+### Uncertainties
 
 To calculate errors, ``poropyck`` uses the [Python ``uncertainties`` package]
 (https://pythonhosted.org/uncertainties/). It can be installed using ``pip`` or
 is also available on the ``conda-forge`` channel of Anaconda Cloud. Installation
 instructions are provided on the package webpage.
 
-#### Dynamic Time Warping
+### Dynamic Time Warping
 
 You will need to install the [Dynamic Time Warping
 package](https://github.com/paul-freeman/dtw) before you will be able to use
 ``poropyck``. This package is a Cython package and must therefore be compiled
 for your local hardware (and NumPy) configuration. Once this is installed,
 you will be able to run ``poropyck``.
+
+#### Notice for Windows users
+
+In order for the ``dtw`` package to build successfully, it will need access to a
+C compiler. Microsoft Visual Studio offers a free C compiler for Windows. Simply
+install the Visual Studio Tools and select the following packages:
+
+* Desktop development with C++
+* Python development
+
+After installing these tools, it is recommended that you restart your computer.
+Once this process is complete, installation of ``dtw`` should succeed.
+
+## Installation
 
 ### Option 1: conda
 
