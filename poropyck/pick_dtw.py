@@ -109,6 +109,9 @@ class DTW:
 
         self.template.plot(self.ax['template'])
         self.query.plot(self.ax['query'])
+        self.run_dtw()
+        self.highlight_summary()
+        self.plot_results()
         plt.show()
         return {
             'file': self.query_path,
@@ -140,10 +143,12 @@ class DTW:
             if event.inaxes is self.ax['query']:
                 self.query.onpress(event)
                 self.query.plot(self.ax['query'])
-            self.template.pick_start = None
-            self.template.pick_end = None
-            self.query.pick_start = None
-            self.query.pick_end = None
+            if event.inaxes is self.ax['template']:
+                self.template.pick_start = None
+                self.template.pick_end = None
+            if event.inaxes is self.ax['query']:
+                self.query.pick_start = None
+                self.query.pick_end = None
             self.clear_output_axes()
             self.fig.canvas.draw_idle()
 
@@ -157,6 +162,8 @@ class DTW:
                 self.query.onrelease(event)
                 self.query.plot(self.ax['query'])
             self.run_dtw()
+            self.highlight_summary()
+            self.plot_results()
             self.fig.canvas.draw_idle()
 
     def onmotion(self, event):
@@ -258,9 +265,9 @@ class DTW:
         queryh = self.query.hilbert_abs()
         x_ax.clear()
         x_ax.set_title(
-            ('1 click for certain time or\n' +
-             '2 clicks for 95% confidence interval\n' +
-             'Close window when complete'),
+            ('Use predicted arrival shown or\n' +
+             'pick a 95% confidence interval.\n' +
+             'Close window when complete.'),
             y=1.25
         )
         x_ax.plot(query_times, query_signal, '-', c=self.query_color, lw=2)
@@ -348,7 +355,7 @@ class DTW:
         ax_y.axhline(mean, linewidth=2, color=self.template.color)
 
     def plot_results(self):
-        """plot the Monte Carlo distributions"""
+        """plot the distributions"""
         self.template.plot_time(self.ax['template_clicks'])
         self.template.plot_velocity(self.ax['template_velocity'])
         self.query.plot_time(self.ax['query_clicks'])
@@ -366,6 +373,21 @@ class DTW:
         self.ax['query_velocity'].clear()
 
 
+def aic(signal):
+    """estimate pick point"""
+    length = len(signal)
+    output = [0]
+    with np.errstate(divide='ignore'):
+        for k in range(1, length - 1):
+            val = (k * np.log(np.var(signal[0:k])) +
+                   (length-k-1) * np.log(np.var(signal[k+1:length])))
+            if val == -np.inf:
+                val = 0
+            output.append(val)
+    output.append(0)
+    return np.argmin(output)
+
+
 class Signal:
     """one signal to be compared"""
 
@@ -375,12 +397,18 @@ class Signal:
         self.color = color
         self.start = window_start
         self.finish = window_end
+        width = len(self.signal) // 80
+        predicted = aic(self.signal)
         if not self.start:
-            self.start = self.times[len(self.times) // 2]
+            self.start = self.times[
+                max(0, predicted - width)
+            ]
         if not self.finish:
-            self.finish = self.times[len(self.times) // 2 + 1]
+            self.finish = self.times[
+                min(len(self.signal) - 1, predicted + width)
+            ]
         self.pressed = False
-        self.pick_start = None
+        self.pick_start = self.times[predicted]
         self.pick_end = None
         self.picked_times, self.picked_signal = self.get_picked_data()
         self.velocity = None
@@ -396,6 +424,9 @@ class Signal:
         self.pressed = False
         self.move_line(event)
         self.picked_times, self.picked_signal = self.get_picked_data()
+        predicted = aic(self.picked_signal)
+        self.pick_start = self.picked_times[predicted]
+        self.pick_end = None
 
     def move_line(self, event):
         """move the nearest line"""

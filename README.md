@@ -1,21 +1,22 @@
 # Poropyck
 
-## Changes in version 1.6
+## Changes in version 1.7
 
-* input files now expect *microsecond* time units, as opposed to *seconds*
-* all demo files updated to microsecond time units
-* improved handling of calculations with zero error
-* number of skipped rows is now defined at the top of the source code
-* *time* and *velocity* result plots for template and query now share an x-axis.
-* title for summary plot contains better instructions
-* added support for single click on summary plot (for *no uncertainty* calculations)
-* renamed ``plot_clicks`` to ``plot_time`` (this is more accurate)
-* ``±`` no longer prints on results plot when there is no error
-* moved *Execution* section of README to come after *Input data* section
+* ``poropyck`` now proposes a pick location using an AIC calculation, although
+  this can obviously be adjusted by the user
 
 ## Installation
 
-### Prerequisite - Dynamic Time Warping
+### Prerequisite
+
+#### Uncertainties
+
+To calculate errors, ``poropyck`` uses the [Python ``uncertainties`` package]
+(https://pythonhosted.org/uncertainties/). It can be installed using ``pip`` or
+is also available on the ``conda-forge`` channel of Anaconda Cloud. Installation
+instructions are provided on the package webpage.
+
+#### Dynamic Time Warping
 
 You will need to install the [Dynamic Time Warping
 package](https://github.com/paul-freeman/dtw) before you will be able to use
@@ -29,8 +30,8 @@ The ``poropyck`` package is available on Anaconda Cloud
 
     conda install poropyck -c freemapa
 
-This should automatically get the necessary dependencies, when possible, and
-is generally the easiest way to go.
+If you already have Anaconda (or similar) installed, this is probably the
+easiest way to go.
 
 ### Option 2: pip
 
@@ -44,12 +45,11 @@ you have the ``uncertainties`` package installeds, as well as some standards:
 
 ### Option 3 (advanced): GitHub
 
-If the other option do no suit your needs, the package source is available on
+If the other options do no suit your needs, the package source is available on
 GitHub.
 
-    git clone https://github.com/paul-freeman/poropyck.git
-
-Installation should be possible using the included ``setup.py`` script:
+After downloading the source code, installation should be possible using the
+included ``setup.py`` script:
 
     python setup.py install
 
@@ -66,24 +66,34 @@ For reference, the following is a list of packages used during development:
 This is not to say that these package versions are required, but if you
 encounter problems, this may be a place to start your search.
 
-If you would like to make changes to the code, you should install it in
-development mode, using
+## Modifying the code
+
+All the installation methods mentioned so far are *package installations*,
+meaning they will install poropyck into the appropriate Python path known by
+your version of Python. These installed files are usually hidden away and
+difficult to access.
+
+If you would like to make modifications to the poropyck code, you will need to
+perform the setup in *development mode*. To do this, download the source code
+from github and run the ``setup.py`` file with the ``develop`` option, like
+this:
 
     python setup.py develop
-    
-This will install it such that it uses the code in your poropyck folder
-instead of looking in the conda or pip installation directory.
 
-When you are done changing the code, you should upload (push) it to
-Github. Then you can stope development mode using
+Doing this will "install" ``poropyck`` but will actually use the ``pick_dtw.py``
+file in the downloaded source code. Any changes made to this file will be
+available the next time you run ``poropyck``.
+
+Installing packages in *development mode* is not a good long term solution, as
+it can cause problems in the system down the road. Therefore, it is recommended
+that you properly deactivate *development mode* when you have finished working
+on your changes. You can do this by running:
 
     python setup.py develop --uninstall
 
-## Input data
+Good package management is an important part of software development.
 
-It should be obvious that the ``lengths`` input into the code is just a list
-of length measurements. If the list contains only 1 measurement, the length
-variable will have no uncertainty, but ``poropyck`` should still work.
+## Input data
 
 The signal files used as input to ``poropyck`` should be CSV files.
 
