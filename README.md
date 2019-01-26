@@ -1,5 +1,16 @@
 # Poropyck
 
+This software repository is just one part of a larger project and should be
+used within the context of [the paper](https://library.seg.org/doi/abs/10.1190/geo2018-0331.1)
+authored by Evert L. Durán and Ludmila Adam and Irene C. Wallis.
+
+[![DOI:10.1007/978-3-319-76207-4_15](https://zenodo.org/badge/DOI/10.1190/geo2018-0331.1.svg)](https://doi.org/10.1190/geo2018-0331.1)
+
+*Please note that recent versions of `poropyck` have replaced Monte Carlo error
+propogation with Linear error propogation, so while the paper may make references
+to Monte Carlo, the latest releses of this package will no longer be using this
+error propogation technique.*
+
 ## Changes in version 1.7
 
 * ``poropyck`` now proposes a pick location using an AIC calculation, although
@@ -9,8 +20,9 @@
 
 ### Uncertainties
 
-To calculate errors, ``poropyck`` uses the [Python ``uncertainties`` package]
-(https://pythonhosted.org/uncertainties/). It can be installed using ``pip`` or
+To calculate errors, ``poropyck`` uses the [Python ``uncertainties``
+package](https://pythonhosted.org/uncertainties/).
+It can be installed using ``pip`` or
 is also available on the ``conda-forge`` channel of Anaconda Cloud. Installation
 instructions are provided on the package webpage.
 
