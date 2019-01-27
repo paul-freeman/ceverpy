@@ -7,9 +7,9 @@ authored by Evert L. Durán and Ludmila Adam and Irene C. Wallis.
 [![DOI:10.1007/978-3-319-76207-4_15](https://zenodo.org/badge/DOI/10.1190/geo2018-0331.1.svg)](https://doi.org/10.1190/geo2018-0331.1)
 
 *Please note that recent versions of `poropyck` have replaced Monte Carlo error
-propogation with Linear error propogation, so while the paper may make references
+propagation with Linear error propagation, so while the paper may make references
 to Monte Carlo, the latest releses of this package will no longer be using this
-error propogation technique.*
+error propagation technique.*
 
 ## Changes in version 1.7
 
